@@ -10,7 +10,6 @@
       <a href="#getting-started">Getting Started</a>
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
     <li>
@@ -32,7 +31,20 @@ This is a C++ container that runs a Cache and Memory Hierarchy Simulator.
 # Getting Started
 
 ## Prerequisites
-## Installation
+
+Must have `g++` installed to run this program.
+
+To install the G++ compiler on Linux run:
+
+```bash
+sudo apt install g++
+```
+
+Verify that you have `g++`:
+
+```
+g++ --version
+```
 
 # Usage
 
