@@ -31,5 +31,7 @@
 *.out
 *.app
 
+sim_cache
+
 # Build folder
 build/
