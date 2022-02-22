@@ -39,6 +39,7 @@ sim_cache: $(SIM_OBJ)
 clean:
 	rm -f ./build/*.o sim_cache
 	rm -f ./src/*.o sim_cache
+	rm -f ./test/*.o sim_cache
 	rm -rf ./build
 
 
