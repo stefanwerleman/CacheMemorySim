@@ -81,7 +81,7 @@ std::string ArgumentWrapper::get_trace_file(void)
 
 std::ostream& operator << (std::ostream &output, ArgumentWrapper argument_wrapper)
 {
-        output << "{" << std::endl;
+        output << "ArgumentWrapper: \n{" << std::endl;
         output << "\tBLOCK_SIZE: " << (argument_wrapper.get_block_size()) << " bytes," << std::endl;
         output << "\tL1_SIZE: " << (argument_wrapper.get_l1_size()) << " bytes," << std::endl;
         output << "\tL1_ASSOC: " << (argument_wrapper.get_l1_associativity()) << "," << std::endl;
