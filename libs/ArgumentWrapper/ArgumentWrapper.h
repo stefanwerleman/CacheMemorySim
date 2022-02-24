@@ -40,6 +40,7 @@ class ArgumentWrapper
         std::string get_trace_file(void);
 };
 
+// Cleaner way to output this class.
 std::ostream& operator << (std::ostream &output, ArgumentWrapper argument_wrapper);
 
 #endif

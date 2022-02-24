@@ -46,6 +46,7 @@ unsigned int ArgumentWrapper::get_l2_associativity(void)
     return this->l2_associativity;
 }
 
+// Cleaner to output the names of the policies.
 std::string ArgumentWrapper::get_replacement_policy(void)
 {
     if (this->replacement_policy == 0)
@@ -62,6 +63,7 @@ std::string ArgumentWrapper::get_replacement_policy(void)
     }
 }
 
+// Cleaner to output the names of the properties.
 std::string ArgumentWrapper::get_inclusion_property(void)
 {
     if (this->inclusion_property == 0)
