@@ -6,10 +6,10 @@ CFLAGS = $(OPT) $(WARN) $(INC) $(LIB)
 BUILD = ./build/
 
 # List all your .cc files here (source files, excluding header files)
-SIM_SRC = ./src/main_sim.cpp
+SIM_SRC = ./src/main_sim.cpp ./libs/ArgumentWrapper.cpp
 
 # List corresponding compiled object files here (.o files)
-SIM_OBJ = ./src/main_sim.o
+SIM_OBJ = ./src/main_sim.o ./libs/ArgumentWrapper/ArgumentWrapper.o
  
 #################################
 
@@ -25,6 +25,7 @@ sim_cache: $(SIM_OBJ)
 	$(CC) -o sim_cache $(CFLAGS) $(SIM_OBJ) -lm
 	@if [ ! -d $(BUILD) ]; then mkdir ./build; fi
 	@mv ./src/*.o ./build/
+	@mv ./libs/*/*.o ./build/
 	@echo "-----------DONE WITH SIM_CACHE-----------"
 
 
@@ -40,6 +41,7 @@ clean:
 	rm -f ./build/*.o sim_cache
 	rm -f ./src/*.o sim_cache
 	rm -f ./test/*.o sim_cache
+	rm -f ./libs/*/*.o
 	rm -rf ./build
 
 
