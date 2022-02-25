@@ -1,24 +1,37 @@
-#include "ArgumentWrapper.h"
 #include <string>
+#include <tuple>
+#include <vector>
 
-ArgumentWrapper::ArgumentWrapper (
-    unsigned int block_size, 
-    unsigned int l1_size, 
-    unsigned int l1_associativity,
-    unsigned int l2_size,
-    unsigned int l2_associativity,
-    unsigned int replacement_policy,
-    unsigned int inclusion_property,
-    std::string trace_file)
+#include "ArgumentWrapper.h"
+#include "../utils/utils.h"
+
+ArgumentWrapper::ArgumentWrapper (int argc, char **argv)
 {
-    this->block_size = block_size;
-    this->l1_size = l1_size;
-    this->l1_associativity = l1_associativity;
-    this->l2_size = l2_size;
-    this->l2_associativity = l2_associativity;
-    this->replacement_policy = replacement_policy;
-    this->inclusion_property = inclusion_property;
-    this->trace_file = trace_file;
+    const int BLOCKSIZE_ARGUMENT = 1;
+    const int REPLACEMENT_POLICY_ARGUMENT = argc - 3;
+    const int INCLUSION_PROPERTY_ARGUMENT = argc - 2;
+    const int TRACE_FILE_ARGUMENT = argc - 1;
+
+
+    this->block_size = atoi(argv[BLOCKSIZE_ARGUMENT]);
+    this->replacement_policy = atoi(argv[REPLACEMENT_POLICY_ARGUMENT]);
+    this->inclusion_property = atoi(argv[INCLUSION_PROPERTY_ARGUMENT]);
+    this->trace_file = argv[TRACE_FILE_ARGUMENT];
+    
+    // Want to store all cache levels in a list of tuples
+    int num_level = 1;
+    for (
+        int level = BLOCKSIZE_ARGUMENT + 1; 
+        level < REPLACEMENT_POLICY_ARGUMENT - 1; 
+        level += 2)
+    {
+        std::string level_name = 'L' + std::to_string(num_level);
+        unsigned int size = atoi(argv[level]);
+        unsigned int associativity = atoi(argv[level + 1]);
+        this->levels.push_back(std::make_tuple(level_name, size, associativity));
+
+        num_level++;
+    }
 }
 
 unsigned int ArgumentWrapper::get_block_size(void)
@@ -26,24 +39,9 @@ unsigned int ArgumentWrapper::get_block_size(void)
     return this->block_size;
 }
 
-unsigned int ArgumentWrapper::get_l1_size(void)
+std::vector<std::tuple<std::string, unsigned int, unsigned int>> ArgumentWrapper::get_levels(void)
 {
-    return this->l1_size;
-}
-
-unsigned int ArgumentWrapper::get_l1_associativity(void)
-{
-    return this->l1_associativity;
-}
-
-unsigned int ArgumentWrapper::get_l2_size(void)
-{
-    return this->l2_size;
-}
-
-unsigned int ArgumentWrapper::get_l2_associativity(void)
-{
-    return this->l2_associativity;
+    return this->levels;
 }
 
 // Cleaner to output the names of the policies.
@@ -81,14 +79,36 @@ std::string ArgumentWrapper::get_trace_file(void)
     return this->trace_file;
 }
 
+std::string tuple_to_string(std::tuple<std::string, unsigned int, unsigned int> level)
+{
+    return ("(" + 
+            std::get<0>(level) + 
+            ", " + 
+            std::to_string(std::get<1>(level)) + 
+            ", " + 
+            std::to_string(std::get<2>(level)) +
+            ")");
+}
+
+
 std::ostream& operator << (std::ostream &output, ArgumentWrapper argument_wrapper)
 {
         output << "ArgumentWrapper: \n{" << std::endl;
         output << "\tBLOCK_SIZE: " << (argument_wrapper.get_block_size()) << " bytes," << std::endl;
-        output << "\tL1_SIZE: " << (argument_wrapper.get_l1_size()) << " bytes," << std::endl;
-        output << "\tL1_ASSOC: " << (argument_wrapper.get_l1_associativity()) << "," << std::endl;
-        output << "\tL2_SIZE: " << (argument_wrapper.get_l2_size()) << " bytes," << std::endl;
-        output << "\tL2_ASSOC: " << (argument_wrapper.get_l2_associativity()) << "," << std::endl;
+        
+        // Print all levels
+        std::vector<std::tuple<std::string, unsigned int, unsigned int>> levels = argument_wrapper.get_levels();
+        int current_level = 0;
+        int number_of_levels = levels.size();
+
+        output << "\tLEVELS: [ ";
+        for (std::tuple<std::string, unsigned int, unsigned int> level: levels)
+        {
+            output << tuple_to_string(level) << utils::get_separator(current_level, number_of_levels);
+            current_level++;
+        }
+        output << " ]," <<std::endl;
+
         output << "\tREPLACEMENT_POLICY: " << (argument_wrapper.get_replacement_policy()) << "," << std::endl;
         output << "\tINCLUSION_POLICY: " << (argument_wrapper.get_inclusion_property()) << "," << std::endl;
         output << "\ttrace_file: " << (argument_wrapper.get_trace_file()) << std::endl;
@@ -96,3 +116,4 @@ std::ostream& operator << (std::ostream &output, ArgumentWrapper argument_wrappe
 
         return output;
 }
+
