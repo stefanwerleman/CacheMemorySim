@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "../libs/ArgumentWrapper/ArgumentWrapper.h"
+#include "../libs/Cache/Cache.h"
 
 int main(int argc, char **argv)
 {
@@ -14,7 +15,8 @@ int main(int argc, char **argv)
 
     ArgumentWrapper arguments(argc, argv);
 
-    std::cout << arguments;
+    Cache L1(arguments);
+    Cache L2(arguments);
 
 	return 0;
 }
