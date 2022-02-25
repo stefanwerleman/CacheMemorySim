@@ -6,7 +6,6 @@
 #include "Cache.h"
 #include "../ArgumentWrapper/ArgumentWrapper.h"
 
-
 unsigned int Cache::number_of_caches = 0;
 
 Cache::Cache (ArgumentWrapper arguments)

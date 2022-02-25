@@ -7,6 +7,12 @@
 
 #include "../ArgumentWrapper/ArgumentWrapper.h"
 
+typedef struct set
+{
+    int valid;
+    int tag;
+} set;
+
 class Cache
 {
     unsigned int size;
@@ -14,6 +20,9 @@ class Cache
     unsigned int level;
     unsigned int number_of_sets;
     unsigned int number_of_blocks;
+
+    // TODO: Create a tag_store for n-way set-accosiative.
+    int *tag_store;
 
     static unsigned int number_of_caches;
 
