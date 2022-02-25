@@ -3,7 +3,12 @@ OPT = -O3
 #OPT = -g
 WARN = -Wall
 CFLAGS = $(OPT) $(WARN) $(INC) $(LIB)
+
+# Other directories
 BUILD = ./build/
+LIBS = ./libs/
+SRC = ./src/
+TEST = ./test/
 
 # List all your .cc files here (source files, excluding header files)
 SIM_SRC = ./src/main_sim.cpp ./libs/ArgumentWrapper/ArgumentWrapper.cpp ./libs/utils/utils.cpp ./libs/Cache/Cache.cpp 
@@ -23,9 +28,9 @@ all: sim_cache
 
 sim_cache: $(SIM_OBJ)
 	$(CC) -o sim_cache $(CFLAGS) $(SIM_OBJ) -lm
-	@if [ ! -d $(BUILD) ]; then mkdir ./build; fi
-	@mv ./src/*.o ./build/
-	@mv ./libs/*/*.o ./build/
+	@if [ ! -d $(BUILD) ]; then mkdir $(BUILD); fi
+	@mv $(SRC)*.o ./build/
+	@mv $(LIBS)*/*.o ./build/
 	@echo "-----------DONE WITH SIM_CACHE-----------"
 
 
@@ -38,10 +43,10 @@ sim_cache: $(SIM_OBJ)
 # type "make clean" to remove all .o files plus the sim_cache binary
 
 clean:
-	rm -f ./build/*.o sim_cache
-	rm -f ./src/*.o sim_cache
-	rm -f ./test/*.o sim_cache
-	rm -f ./libs/*/*.o
+	rm -f $(BUILD)*.o sim_cache
+	rm -f $(SRC)*.o sim_cache
+	rm -f $(TEST)/*.o sim_cache
+	rm -f $(LIBS)*/*.o
 	rm -rf ./build
 
 
