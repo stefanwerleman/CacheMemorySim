@@ -53,7 +53,6 @@ unsigned int Cache::get_number_of_caches(void)
     return this->number_of_caches;
 }
 
-
 std::ostream& operator << (std::ostream &output, Cache cache)
 {
     output << "L" << cache.get_level() << ":" << std::endl;
