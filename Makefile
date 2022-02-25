@@ -1,6 +1,6 @@
 CC = g++
 OPT = -O3
-#OPT = -g
+OPT = -g
 WARN = -Wall
 CFLAGS = $(OPT) $(WARN) $(INC) $(LIB)
 
@@ -40,9 +40,14 @@ sim_cache: $(SIM_OBJ)
 	$(CC) $(CFLAGS)  -c $*.cc
 
 
+detect_leak:
+	valgrind --leak-check=yes ./sim_cache 32 8192 4 262144 8 0 0 gcc_trace.txt
+
+
 # type "make clean" to remove all .o files plus the sim_cache binary
 
 clean:
+	rm -f ./*.o sim_cache
 	rm -f $(BUILD)*.o sim_cache
 	rm -f $(SRC)*.o sim_cache
 	rm -f $(TEST)/*.o sim_cache

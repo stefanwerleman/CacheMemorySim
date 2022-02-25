@@ -23,6 +23,7 @@
 </details>
 
 # About The Project
+
 This is a C++ container that runs a Cache and Memory Hierarchy Simulator.
 
 # Getting Started
@@ -41,6 +42,12 @@ Verify that you have `g++`:
 g++ --version
 ```
 
+The `Makefile` also runs memory leak detection using `valgrind`. To install valgrind:
+
+```
+sudo apt install valgrind
+```
+
 # Usage
 
 To compile the program run:
@@ -52,38 +59,40 @@ make
 ## Input Format
 
 After running `make`, to run the executable enter this command with the following arguments:
+
 ```bash
 ./sim_cache <BLOCKSIZE> <L1_SIZE> <L1_ASSOC> <L2_SIZE> <L2_ASSOC> <REPLACEMENT_POLICY> <INCLUSION_PROPERTY> <trace_file>
 ```
 
 ### Input Arguments
-- **BLOCKSIZE**: 
-	- `unsigned int`. 
-	- Block size in bytes. (Same block size for all caches in the memory hierarchy.)
-- **L1_SIZE**: 
-	- `unsingned int`. 
-	- L1 cache size in bytes.
-- **L1_ASSOC**: 
-	- `unsigned int`. 
-	- L1 set-associativity (1 is direct-mapped)
-- **L2_SIZE**: 
-	- `unsigned int`. 
-	- L2 cache size in bytes.
-- **L2_ASSOC**`: 
-	- `unsigned int`. 
-	- L2 set-associativity (1 is direct-mapped)
-- **REPLACEMENT_POLICY**: 
-	- `unsigned int`.
-	- 0 for LRU
-	- 1 for PLRU
-	- 2 for Optimal
-- **INCLUSION_PROPERTY**: 
-	- `unsigned int`.
-	- 0 for non-inclusive
-	- 1 for inclusive
-- **trace_file**: 
-	- `std::string`.
-	- Full name of trace file including any extensions.
+
+-   **BLOCKSIZE**:
+    -   `unsigned int`.
+    -   Block size in bytes. (Same block size for all caches in the memory hierarchy.)
+-   **L1_SIZE**:
+    -   `unsingned int`.
+    -   L1 cache size in bytes.
+-   **L1_ASSOC**:
+    -   `unsigned int`.
+    -   L1 set-associativity (1 is direct-mapped)
+-   **L2_SIZE**:
+    -   `unsigned int`.
+    -   L2 cache size in bytes.
+-   **L2_ASSOC**`:
+    -   `unsigned int`.
+    -   L2 set-associativity (1 is direct-mapped)
+-   **REPLACEMENT_POLICY**:
+    -   `unsigned int`.
+    -   0 for LRU
+    -   1 for PLRU
+    -   2 for Optimal
+-   **INCLUSION_PROPERTY**:
+    -   `unsigned int`.
+    -   0 for non-inclusive
+    -   1 for inclusive
+-   **trace_file**:
+    -   `std::string`.
+    -   Full name of trace file including any extensions.
 
 ## Clean Project
 
@@ -99,7 +108,7 @@ To force clean, run:
 make clobber
 ```
 
-## Example 
+## Example
 
 Here is an example:
 
@@ -111,13 +120,13 @@ Here is an example:
 
 **L1 Cache**:
 
-- 8192 Bytes ~ 8KB
-- 4-way set-associative
+-   8192 Bytes ~ 8KB
+-   4-way set-associative
 
 **L2 Cache**:
 
-- 262144 Bytes ~ 262KB
-- 8-way set-associative
+-   262144 Bytes ~ 262KB
+-   8-way set-associative
 
 **REPLACEMENT_POLICY** = 0 = LRU
 
@@ -131,4 +140,4 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 # Acknowledgments
 
-- [The Pitchfork Layout](https://api.csswg.org/bikeshed/?force=1&url=https://raw.githubusercontent.com/vector-of-bool/pitchfork/develop/data/spec.bs)
+-   [The Pitchfork Layout](https://api.csswg.org/bikeshed/?force=1&url=https://raw.githubusercontent.com/vector-of-bool/pitchfork/develop/data/spec.bs)
