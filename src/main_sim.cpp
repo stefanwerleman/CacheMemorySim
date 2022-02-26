@@ -26,9 +26,13 @@ int main(int argc, char **argv)
 
     std::string in;
 
-    while (getline(file, in))
+    while (file >> in)
     {
-        std::cout << memory_hierarchy[0]->parse_address(in) << std::endl;
+        char operation = in[0];
+        file >> in;
+        std::string address = in;
+
+        std::cout << memory_hierarchy[0]->parse_address(operation, address, arguments.get_block_size());
     }
 
     // TODO: Begin Simulation

@@ -10,7 +10,7 @@ const int EMPTY_BIT =  -1;
 
 typedef struct address
 {
-    unsigned int addr;
+    std::string addr;
     char operation;
     unsigned int tag;
     unsigned int index;
@@ -47,7 +47,7 @@ class Cache
         unsigned int get_number_of_sets(void);
         unsigned int get_number_of_blocks(void);
         unsigned int get_number_of_caches(void);
-        address parse_address(std::string input_address);
+        address parse_address(char operation, std::string input_address, unsigned int block_size);
 };
 
 // Output a Cache in a clean way.

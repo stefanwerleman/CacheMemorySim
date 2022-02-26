@@ -1,5 +1,7 @@
 #include <iostream>
 #include <cmath>
+#include <bitset>
+#include <sstream>
 #include <string>
 #include <tuple>
 
@@ -78,9 +80,28 @@ unsigned int Cache::get_number_of_caches(void)
     return this->number_of_caches;
 }
 
-address Cache::parse_address(std::string input_address)
+address Cache::parse_address(char operation, std::string input_address, unsigned int block_size)
 {
     address addr;
+    
+    addr.operation = operation;
+    
+    unsigned mask;
+    std::stringstream address_stream;
+    address_stream << std::hex << input_address;
+    address_stream >> mask;
+    std::bitset<32> binary_addr(mask);
+    
+    unsigned int num_index_bits = log2(this->number_of_sets);
+    unsigned int num_offset_bits = log2(block_size);
+    unsigned int num_tag_bits = 32 - num_index_bits - num_offset_bits;
+
+    std::string address_string = binary_addr.to_string();
+
+    addr.addr = address_string;
+    addr.tag = std::stoi(address_string.substr(0, num_tag_bits), nullptr, 2);
+    addr.index = std::stoi(address_string.substr(num_tag_bits, num_index_bits), nullptr, 2);
+    addr.offset = std::stoi(address_string.substr(num_index_bits, num_offset_bits), nullptr, 2);
 
     return addr;
 }
@@ -111,7 +132,7 @@ std::ostream& operator << (std::ostream &output, address addr)
 {
     output << "address:" << std::endl;
     output << "{" << std::endl; 
-    output << "\tADDRESS: " << std::hex << addr.addr << "," << std::endl;
+    output << "\tADDRESS: " << addr.addr << "," << std::endl;
     output << "\tOPERATION: " << ((addr.operation == 'r') ? "read" : "write") << "," <<std::endl;
     output << "\tTAG: " << addr.tag << "," << std::endl;
     output << "\tINDEX: " << addr.index << "," << std::endl;
