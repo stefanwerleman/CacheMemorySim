@@ -26,6 +26,16 @@ Cache::Cache (ArgumentWrapper arguments)
     this->tag_store = this->create_tag_store();
 }
 
+Cache::~Cache (void)
+{
+    for (int way = 0; way < this->number_of_sets; way++)
+    {
+        delete this->tag_store[way];
+    }
+
+    delete this->tag_store;
+}
+
 set **Cache::create_tag_store(void)
 {
     set **new_tag_store = new set* [this->number_of_sets];

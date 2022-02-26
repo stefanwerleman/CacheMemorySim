@@ -30,6 +30,7 @@ class Cache
 
     public:
         Cache (ArgumentWrapper arguments);
+        ~Cache ();
 
         unsigned int get_size(void);
         unsigned int get_associativity(void);
