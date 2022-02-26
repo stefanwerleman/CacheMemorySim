@@ -2,6 +2,7 @@
 
 #include "../libs/ArgumentWrapper/ArgumentWrapper.h"
 #include "../libs/Cache/Cache.h"
+#include "../libs/utils/utils.h"
 
 int main(int argc, char **argv)
 {
@@ -14,6 +15,10 @@ int main(int argc, char **argv)
     }
 
     ArgumentWrapper arguments(argc, argv);
+
+    std::vector<Cache*> memory_hierarchy = utils::create_memory_hierarchy(arguments);
+
+    utils::destroy_memory_hierarchy(memory_hierarchy);
 
 	return 0;
 }
