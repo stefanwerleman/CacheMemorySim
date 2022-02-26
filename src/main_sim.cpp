@@ -5,7 +5,7 @@
 
 int main(int argc, char **argv)
 {
-    const int ARGUMENT_LOWER_LIMIT = 9;
+    const int ARGUMENT_LOWER_LIMIT = 7;
 
     if (argc < ARGUMENT_LOWER_LIMIT)
     {
@@ -14,9 +14,6 @@ int main(int argc, char **argv)
     }
 
     ArgumentWrapper arguments(argc, argv);
-
-    Cache L1(arguments);
-    Cache L2(arguments);
 
 	return 0;
 }
