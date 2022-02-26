@@ -8,6 +8,14 @@
 // Denotes that there is nothing in a block
 const int EMPTY_BIT =  -1;
 
+typedef struct address
+{
+    unsigned int addr;
+    unsigned int tag;
+    unsigned int index;
+    unsigned int offset;
+} address;
+
 typedef struct set
 {
     int valid = EMPTY_BIT;

@@ -22,6 +22,7 @@ int main(int argc, char **argv)
 
     // TODO: Begin Simulation
     
+    
     utils::destroy_memory_hierarchy(memory_hierarchy);
 	return 0;
 }

@@ -9,14 +9,6 @@
 // Utils will have helper functions
 namespace utils
 {
-    typedef struct address
-    {
-        unsigned int addr;
-        unsigned int tag;
-        unsigned int index;
-        unsigned int offset;
-    } address;
-
     // Prints an element in a clean way depending if it is the last element.
     std::string get_separator(int current, int length);
 
