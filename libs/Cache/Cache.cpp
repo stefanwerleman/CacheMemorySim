@@ -78,6 +78,13 @@ unsigned int Cache::get_number_of_caches(void)
     return this->number_of_caches;
 }
 
+address Cache::parse_address(std::string input_address)
+{
+    address addr;
+
+    return addr;
+}
+
 // Output a Cache in a clean way.
 std::ostream& operator << (std::ostream &output, Cache cache)
 {
@@ -96,6 +103,20 @@ std::ostream& operator << (std::ostream &output, Cache cache)
 std::ostream& operator << (std::ostream &output, set s)
 {
     output << "[V: " << s.valid << "; T: " << s.tag << "]";
+
+    return output;
+}
+
+std::ostream& operator << (std::ostream &output, address addr)
+{
+    output << "address:" << std::endl;
+    output << "{" << std::endl; 
+    output << "\tADDRESS: " << std::hex << addr.addr << "," << std::endl;
+    output << "\tOPERATION: " << ((addr.operation == 'r') ? "read" : "write") << "," <<std::endl;
+    output << "\tTAG: " << addr.tag << "," << std::endl;
+    output << "\tINDEX: " << addr.index << "," << std::endl;
+    output << "\tOFFSET: " << addr.offset << "," << std::endl;
+    output << "}" << std::endl;
 
     return output;
 }
