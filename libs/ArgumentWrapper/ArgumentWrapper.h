@@ -14,6 +14,7 @@ class ArgumentWrapper
     unsigned int block_size;
     unsigned int replacement_policy;
     unsigned int inclusion_property;
+    unsigned int number_of_caches;
 
     std::vector<std::tuple<std::string, unsigned int, unsigned int>> levels;
     std::string trace_file;
@@ -27,6 +28,7 @@ class ArgumentWrapper
         std::string get_replacement_policy(void);
         std::string get_inclusion_property(void);
         std::string get_trace_file(void);
+        unsigned int get_number_of_caches(void);
 };
 
 // Returns Level tuple as a string.

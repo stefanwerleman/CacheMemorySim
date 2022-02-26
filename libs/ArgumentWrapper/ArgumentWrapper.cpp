@@ -17,6 +17,9 @@ ArgumentWrapper::ArgumentWrapper (int argc, char **argv)
     this->replacement_policy = atoi(argv[REPLACEMENT_POLICY_ARGUMENT]);
     this->inclusion_property = atoi(argv[INCLUSION_PROPERTY_ARGUMENT]);
     this->trace_file = argv[TRACE_FILE_ARGUMENT];
+    this->number_of_caches = (REPLACEMENT_POLICY_ARGUMENT - BLOCKSIZE_ARGUMENT - 1) / 2;
+
+    std::cout << this->number_of_caches << std::endl;
     
     // Want to store all cache levels in a list of tuples
     int num_level = 1;
@@ -77,6 +80,11 @@ std::string ArgumentWrapper::get_inclusion_property(void)
 std::string ArgumentWrapper::get_trace_file(void)
 {
     return this->trace_file;
+}
+
+unsigned int ArgumentWrapper::get_number_of_caches(void)
+{
+    return this->number_of_caches;
 }
 
 std::string tuple_to_string(std::tuple<std::string, unsigned int, unsigned int> level)
