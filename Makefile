@@ -11,7 +11,7 @@ SRC = ./src/
 TEST = ./test/
 
 # List all your .cc files here (source files, excluding header files)
-SIM_SRC = ./src/main_sim.cpp ./libs/ArgumentWrapper/ArgumentWrapper.cpp ./libs/utils/utils.cpp ./libs/Cache/Cache.cpp 
+SIM_SRC = ./src/main_sim.cpp ./libs/ArgumentWrapper/ArgumentWrapper.cpp ./libs/utils/utils.cpp ./libs/Cache/Cache.cpp
 
 # List corresponding compiled object files here (.o files)
 SIM_OBJ = ./src/main_sim.o ./libs/ArgumentWrapper/ArgumentWrapper.o ./libs/utils/utils.o ./libs/Cache/Cache.o

@@ -1,30 +1,32 @@
 #ifndef CACHE
 #define CACHE
 
+#include "../ArgumentWrapper/ArgumentWrapper.h"
 #include <iostream>
 #include <string>
-#include <array>
 
-#include "../ArgumentWrapper/ArgumentWrapper.h"
+// Denotes that there is nothing in a block
+const int EMPTY_BIT =  -1;
 
 typedef struct set
 {
-    int valid;
-    int tag;
+    int valid = EMPTY_BIT;
+    int tag = EMPTY_BIT;
 } set;
 
 class Cache
 {
     unsigned int size;
-    unsigned int associativity;
+    unsigned int associativity;     // AKA the number of columns in tag_store
     unsigned int level;
-    unsigned int number_of_sets;
-    unsigned int number_of_blocks;
+    unsigned int number_of_sets;    // AKA the number of rows in tag_store
 
-    // TODO: Create a tag_store for n-way set-accosiative.
-    int *tag_store;
+    unsigned int number_of_blocks;
+    set **tag_store;
 
     static unsigned int number_of_caches;
+
+    set **create_tag_store(void);
 
     public:
         Cache (ArgumentWrapper arguments);
@@ -38,5 +40,7 @@ class Cache
 };
 
 std::ostream& operator << (std::ostream &output, Cache cache);
+
+std::ostream& operator << (std::ostream &output, set s);
 
 #endif
