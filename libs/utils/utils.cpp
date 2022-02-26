@@ -23,9 +23,16 @@ std::vector<Cache*> utils::create_memory_hierarchy(ArgumentWrapper arguments)
 
     for (int level = 0; level < arguments.get_number_of_caches(); level++)
     {
-        Cache *cache = new Cache(arguments);
+        // Checking if this is an existing cache.
+        unsigned int size = std::get<1>(arguments.get_levels()[level]);
+        unsigned int associativity = std::get<2>(arguments.get_levels()[level]);
 
-        memory_hierarchy.push_back(cache);
+        if (size > 0 && associativity > 0)
+        {
+            Cache *cache = new Cache(arguments);
+            memory_hierarchy.push_back(cache);
+        }
+
     }
 
     return memory_hierarchy;

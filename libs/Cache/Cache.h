@@ -8,6 +8,15 @@
 // Denotes that there is nothing in a block
 const int EMPTY_BIT =  -1;
 
+typedef struct address
+{
+    std::string addr;
+    char operation;
+    unsigned int tag;
+    unsigned int index;
+    unsigned int offset;
+} address;
+
 typedef struct set
 {
     int valid = EMPTY_BIT;
@@ -38,6 +47,7 @@ class Cache
         unsigned int get_number_of_sets(void);
         unsigned int get_number_of_blocks(void);
         unsigned int get_number_of_caches(void);
+        address parse_address(char operation, std::string input_address, unsigned int block_size);
 };
 
 // Output a Cache in a clean way.
@@ -45,5 +55,7 @@ std::ostream& operator << (std::ostream &output, Cache cache);
 
 // Output a set in a clean way.
 std::ostream& operator << (std::ostream &output, set s);
+
+std::ostream& operator << (std::ostream &output, address addr);
 
 #endif
