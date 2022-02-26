@@ -1,7 +1,24 @@
 #include <iostream>
 
-int main(void)
+#include "../libs/ArgumentWrapper/ArgumentWrapper.h"
+#include "../libs/Cache/Cache.h"
+#include "../libs/utils/utils.h"
+
+int main(int argc, char **argv)
 {
-	std::cout << "This is the main cache simulator." << std::endl;
+    const int ARGUMENT_LOWER_LIMIT = 7;
+
+    if (argc < ARGUMENT_LOWER_LIMIT)
+    {
+        std::cout << "Insufficient arguments" << std::endl;
+        return 1;
+    }
+
+    ArgumentWrapper arguments(argc, argv);
+
+    std::vector<Cache*> memory_hierarchy = utils::create_memory_hierarchy(arguments);
+
+    utils::destroy_memory_hierarchy(memory_hierarchy);
+
 	return 0;
 }
