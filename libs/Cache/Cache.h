@@ -40,8 +40,10 @@ class Cache
         unsigned int get_number_of_caches(void);
 };
 
+// Output a Cache in a clean way.
 std::ostream& operator << (std::ostream &output, Cache cache);
 
+// Output a set in a clean way.
 std::ostream& operator << (std::ostream &output, set s);
 
 #endif

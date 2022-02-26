@@ -17,6 +17,7 @@ namespace utils
         unsigned int offset;
     } address;
 
+    // Prints an element in a clean way depending if it is the last element.
     std::string get_separator(int current, int length);
 
     std::vector<Cache*> create_memory_hierarchy(ArgumentWrapper arguments);

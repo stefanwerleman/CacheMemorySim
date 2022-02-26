@@ -4,7 +4,7 @@
 #include "utils.h"
 #include <vector>
 
-// Returns the right format for iterables
+// Prints an element in a clean way depending if it is the last element.
 std::string utils::get_separator(int current, int length)
 {
     if (current < length - 1)

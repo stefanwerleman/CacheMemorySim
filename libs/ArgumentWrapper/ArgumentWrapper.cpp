@@ -12,14 +12,12 @@ ArgumentWrapper::ArgumentWrapper (int argc, char **argv)
     const int INCLUSION_PROPERTY_ARGUMENT = argc - 2;
     const int TRACE_FILE_ARGUMENT = argc - 1;
 
-
+    // Keep all necessary information for our Caches and Addresses.
     this->block_size = atoi(argv[BLOCKSIZE_ARGUMENT]);
     this->replacement_policy = atoi(argv[REPLACEMENT_POLICY_ARGUMENT]);
     this->inclusion_property = atoi(argv[INCLUSION_PROPERTY_ARGUMENT]);
     this->trace_file = argv[TRACE_FILE_ARGUMENT];
     this->number_of_caches = (REPLACEMENT_POLICY_ARGUMENT - BLOCKSIZE_ARGUMENT - 1) / 2;
-
-    std::cout << this->number_of_caches << std::endl;
     
     // Want to store all cache levels in a list of tuples
     int num_level = 1;
@@ -42,6 +40,7 @@ unsigned int ArgumentWrapper::get_block_size(void)
     return this->block_size;
 }
 
+// Returns a list of all the level caches.
 std::vector<std::tuple<std::string, unsigned int, unsigned int>> ArgumentWrapper::get_levels(void)
 {
     return this->levels;
@@ -87,6 +86,7 @@ unsigned int ArgumentWrapper::get_number_of_caches(void)
     return this->number_of_caches;
 }
 
+// Parses cache level into a meaningful string to easily read the contents
 std::string tuple_to_string(std::tuple<std::string, unsigned int, unsigned int> level)
 {
     return ("(" + 
@@ -98,7 +98,7 @@ std::string tuple_to_string(std::tuple<std::string, unsigned int, unsigned int> 
             ")");
 }
 
-
+// Prints out the argument_wrapper in a clean way.
 std::ostream& operator << (std::ostream &output, ArgumentWrapper argument_wrapper)
 {
         output << "ArgumentWrapper: \n{" << std::endl;

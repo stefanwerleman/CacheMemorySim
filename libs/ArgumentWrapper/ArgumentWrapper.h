@@ -16,6 +16,7 @@ class ArgumentWrapper
     unsigned int inclusion_property;
     unsigned int number_of_caches;
 
+    // Represents the level cache by holding: level, size, and associativity.
     std::vector<std::tuple<std::string, unsigned int, unsigned int>> levels;
     std::string trace_file;
 

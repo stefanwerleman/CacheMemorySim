@@ -78,6 +78,7 @@ unsigned int Cache::get_number_of_caches(void)
     return this->number_of_caches;
 }
 
+// Output a Cache in a clean way.
 std::ostream& operator << (std::ostream &output, Cache cache)
 {
     output << "L" << cache.get_level() << ":" << std::endl;
@@ -91,6 +92,7 @@ std::ostream& operator << (std::ostream &output, Cache cache)
     return output;
 }
 
+// Output a set in a clean way.
 std::ostream& operator << (std::ostream &output, set s)
 {
     output << "[V: " << s.valid << "; T: " << s.tag << "]";
