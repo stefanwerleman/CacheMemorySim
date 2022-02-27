@@ -22,7 +22,7 @@ int main(int argc, char **argv)
     std::vector<Cache*> memory_hierarchy = utils::create_memory_hierarchy(arguments);
 
     // TODO: Begin Simulation after you understand replacement policies
-    
+
     utils::destroy_memory_hierarchy(memory_hierarchy);
 	return 0;
 }
