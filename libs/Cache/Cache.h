@@ -21,17 +21,23 @@ typedef struct set
 {
     int valid = EMPTY_BIT;
     int tag = EMPTY_BIT;
+
+    // For LRU only.
+    int sequence_number = EMPTY_BIT;
 } set;
 
 class Cache
 {
     unsigned int size;
-    unsigned int associativity;     // AKA the number of columns in tag_store
     unsigned int level;
-    unsigned int number_of_sets;    // AKA the number of rows in tag_store
-
     unsigned int number_of_blocks;
+    
+    // tag_store realated information
+    unsigned int number_of_sets;        // AKA the number of rows in tag_store
+    unsigned int associativity;         // AKA the number of columns in tag_store
     set **tag_store;
+    
+    int *mru;
 
     static unsigned int number_of_caches;
 
@@ -47,7 +53,11 @@ class Cache
         unsigned int get_number_of_sets(void);
         unsigned int get_number_of_blocks(void);
         unsigned int get_number_of_caches(void);
+        void run_cache(ArgumentWrapper arguments);
         address parse_address(char operation, std::string input_address, unsigned int block_size);
+        
+        // For now, returns if it's HIT, MISS, or REPLACE
+        void LRU(address addr);
 };
 
 // Output a Cache in a clean way.
