@@ -7,8 +7,9 @@
 #include <string>
 #include <tuple>
 
-#include "Cache.h"
 #include "../ArgumentWrapper/ArgumentWrapper.h"
+#include "Cache.h"
+#include "../utils/utils.h"
 
 unsigned int Cache::number_of_caches = 0;
 const unsigned int UPPER_BOUND = UINT_MAX;
@@ -111,7 +112,7 @@ void Cache::run_cache(ArgumentWrapper arguments)
 
         file >> input_address;
 
-        address addr = this->parse_address(operation, input_address, arguments.get_block_size());
+        utils::address addr = utils::parse_address(operation, input_address, arguments.get_block_size(), this->number_of_sets);
 
         if (this->associativity == 1)
         {
@@ -127,33 +128,7 @@ void Cache::run_cache(ArgumentWrapper arguments)
     }
 }
 
-address Cache::parse_address(char operation, std::string input_address, unsigned int block_size)
-{
-    address addr;
-    
-    addr.operation = operation;
-    
-    unsigned mask;
-    std::stringstream address_stream;
-    address_stream << std::hex << input_address;
-    address_stream >> mask;
-    std::bitset<32> binary_addr(mask);
-    
-    unsigned int num_index_bits = log2(this->number_of_sets);
-    unsigned int num_offset_bits = log2(block_size);
-    unsigned int num_tag_bits = 32 - num_index_bits - num_offset_bits;
-
-    std::string address_string = binary_addr.to_string();
-
-    addr.addr = address_string;
-    addr.tag = std::stoi(address_string.substr(0, num_tag_bits), nullptr, 2);
-    addr.index = std::stoi(address_string.substr(num_tag_bits, num_index_bits), nullptr, 2);
-    addr.offset = std::stoi(address_string.substr(num_index_bits, num_offset_bits), nullptr, 2);
-
-    return addr;
-}
-
-void Cache::LRU(address addr)
+void Cache::LRU(utils::address addr)
 {
     // Needed for replacements
     bool need_replacement = true;
@@ -221,20 +196,6 @@ std::ostream& operator << (std::ostream &output, Cache cache)
 std::ostream& operator << (std::ostream &output, set s)
 {
     output << "[V: " << s.valid << "; T: " << s.tag << "]";
-
-    return output;
-}
-
-std::ostream& operator << (std::ostream &output, address addr)
-{
-    output << "address:" << std::endl;
-    output << "{" << std::endl; 
-    output << "\tADDRESS: " << addr.addr << "," << std::endl;
-    output << "\tOPERATION: " << ((addr.operation == 'r') ? "read" : "write") << "," <<std::endl;
-    output << "\tTAG: " << addr.tag << "," << std::endl;
-    output << "\tINDEX: " << addr.index << "," << std::endl;
-    output << "\tOFFSET: " << addr.offset << "," << std::endl;
-    output << "}" << std::endl;
 
     return output;
 }

@@ -59,20 +59,20 @@ std::string ArgumentWrapper::get_replacement_policy(void)
     }
     else
     {
-        return "Optimal";
+        return "OPTIMAL";
     }
 }
 
 // Cleaner to output the names of the properties.
 std::string ArgumentWrapper::get_inclusion_property(void)
 {
-    if (this->inclusion_property == 0)
+    if (this->inclusion_property == 1)
     {
-        return "non-inclusive";
+        return "INCLUSIVE";
     }
     else
     {
-        return "inclusive";
+        return "NON-INCLUSIVE";
     }
 }
 
