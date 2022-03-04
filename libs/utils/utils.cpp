@@ -1,5 +1,6 @@
 #include <cmath>
 #include <bitset>
+#include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -45,4 +46,17 @@ std::string utils::get_separator(int current, int length)
     {
         return "";
     }
+}
+
+std::ostream& utils::operator << (std::ostream &output, utils::address addr)
+{
+    output << "Address: {" << std::endl;
+    output << "\taddress: " << addr.addr << "," << std::endl;
+    output << "\toperation: " << addr.operation << "," << std::endl;
+    output << "\ttag: " << addr.tag << "," << std::endl;
+    output << "\tindex: " << addr.index << "," << std::endl;
+    output << "\toffset: " << addr.offset << std::endl;
+    output << "}" <<std::endl;
+    
+    return output;
 }

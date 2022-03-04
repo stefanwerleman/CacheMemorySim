@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <tuple>
 
 #include "../ArgumentWrapper/ArgumentWrapper.h"
 #include "../utils/utils.h"
@@ -10,14 +11,11 @@
 // Denotes that there is nothing in a block
 const int EMPTY_BIT =  -1;
 
-typedef struct set
+// Need to forward declare to let the compiler know this exists.
+namespace utils
 {
-    int valid = EMPTY_BIT;
-    int tag = EMPTY_BIT;
-
-    // For LRU only.
-    int sequence_number = EMPTY_BIT;
-} set;
+    struct address;
+}
 
 class Cache
 {
@@ -28,17 +26,15 @@ class Cache
     // tag_store realated information
     unsigned int number_of_sets;        // AKA the number of rows in tag_store
     unsigned int associativity;         // AKA the number of columns in tag_store
-    set **tag_store;
-    
-    int *mru;
 
     static unsigned int number_of_caches;
-
-    set **create_tag_store(void);
+    static unsigned int block_size;
 
     public:
-        Cache (ArgumentWrapper arguments);
-        ~Cache ();
+        Cache (std::tuple<std::string, unsigned int, unsigned int>, unsigned int block_size, std::string replacement_policy);
+
+        utils::address run_cache(utils::address addr);
+        utils::address run_cache(char operation, std::string input_address);
 
         unsigned int get_size(void);
         unsigned int get_associativity(void);
@@ -46,16 +42,9 @@ class Cache
         unsigned int get_number_of_sets(void);
         unsigned int get_number_of_blocks(void);
         unsigned int get_number_of_caches(void);
-        void run_cache(ArgumentWrapper arguments);
-        
-        // For now, returns if it's HIT, MISS, or REPLACE
-        void LRU(utils::address addr);
 };
 
 // Output a Cache in a clean way.
 std::ostream& operator << (std::ostream &output, Cache cache);
-
-// Output a set in a clean way.
-std::ostream& operator << (std::ostream &output, set s);
 
 #endif

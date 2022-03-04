@@ -9,12 +9,15 @@
 
 class CacheHierarchy
 {
+    std::string inclusion_property;
+    std::string trace_file;
     std::vector<Cache*> caches;
-    std::string inclusion_policy;
 
     public:
         CacheHierarchy(ArgumentWrapper arguments);
-        ~CacheHierarchy();
+        ~CacheHierarchy(void);
+
+        void run_cache_hierarchy(void);
 };
 
 #endif

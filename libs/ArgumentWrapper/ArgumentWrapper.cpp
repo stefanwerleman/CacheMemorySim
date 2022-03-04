@@ -87,15 +87,11 @@ unsigned int ArgumentWrapper::get_number_of_caches(void)
 }
 
 // Parses cache level into a meaningful string to easily read the contents
-std::string tuple_to_string(std::tuple<std::string, unsigned int, unsigned int> level)
+std::ostream& operator << (std::ostream &output ,std::tuple<std::string, unsigned int, unsigned int> level)
 {
-    return ("(" + 
-            std::get<0>(level) + 
-            ", " + 
-            std::to_string(std::get<1>(level)) + 
-            ", " + 
-            std::to_string(std::get<2>(level)) +
-            ")");
+    output << "(" << std::get<0>(level) << ", " << std::get<1>(level) << ", " << std::get<2>(level) << ")";
+
+    return output;
 }
 
 // Prints out the argument_wrapper in a clean way.
@@ -112,7 +108,7 @@ std::ostream& operator << (std::ostream &output, ArgumentWrapper argument_wrappe
         output << "\tLEVELS: [ ";
         for (std::tuple<std::string, unsigned int, unsigned int> level: levels)
         {
-            output << tuple_to_string(level) << utils::get_separator(current_level, number_of_levels);
+            output << level << utils::get_separator(current_level, number_of_levels);
             current_level++;
         }
         output << " ]," <<std::endl;

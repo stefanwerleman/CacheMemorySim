@@ -41,7 +41,9 @@ sim_cache: $(SIM_OBJ)
 
 
 detect_leak:
+	@echo "-----------DETECTING MEMORY LEAKS-----------"
 	valgrind --leak-check=yes ./sim_cache 32 8192 4 262144 8 0 0 gcc_trace.txt
+	@echo "-----------DONE WITH MEMORY LEAK DETECTION-----------"
 
 
 # type "make clean" to remove all .o files plus the sim_cache binary

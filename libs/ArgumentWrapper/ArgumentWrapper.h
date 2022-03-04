@@ -33,7 +33,7 @@ class ArgumentWrapper
 };
 
 // Returns Level tuple as a string.
-std::string tuple_to_string(std::tuple<std::string, unsigned int, unsigned int> level);
+std::ostream& operator << (std::ostream &output, std::tuple<std::string, unsigned int, unsigned int> level);
 
 // Cleaner way to output this class.
 std::ostream& operator << (std::ostream &output, ArgumentWrapper argument_wrapper);
