@@ -14,6 +14,11 @@ unsigned int Cache::number_of_caches = 0;
 unsigned int Cache::block_size = 0;
 
 const unsigned int UPPER_BOUND = UINT_MAX;
+const unsigned int DIRECT_BLOCK = 0;
+const unsigned int DIRECT_MAP = 1;
+const std::string LRU = "LRU";
+const std::string PLRU = "PLRU";
+const std::string OPTIMAL = "OPTIMAL";
 
 enum Result { HIT = 1, MISS = -1, REPLACE = 0 };
 
@@ -30,14 +35,89 @@ Cache::Cache (std::tuple<std::string, unsigned int, unsigned int> level, unsigne
 
     this->number_of_caches++;
     this->level = this->number_of_caches;
+
+    this->replacement_policy = replacement_policy;
+
+    this->sets = new utils::block* [this->number_of_sets];
+
+    for (int set = 0; set < this->number_of_sets; set++)
+    {
+        this->sets[set] = new utils::block [this->associativity];
+    }
+
+    this->victim_cache = new utils::block [2];
 }
 
-utils::address Cache::run_cache(utils::address addr)
+Cache::~Cache (void)
 {
-    return addr;
+    if (this->sets != NULL)
+    {
+        for (int set = 0; set < this->number_of_sets; set++)
+        {
+            delete this->sets[set];
+        }
+
+        delete this->sets;
+    }
+
+    if (this->victim_cache != NULL)
+    {
+        delete this->victim_cache;
+    }
 }
 
-utils::address Cache::run_cache(char operation, std::string input_address)
+utils::address* Cache::direct_map(utils::address addr)
+{
+    if (addr.tag == this->sets[addr.index][DIRECT_BLOCK].tag)
+    {
+        // HIT
+        std::cout << "HIT" << std::endl;
+    }
+    else if (this->sets[addr.index][DIRECT_BLOCK].tag == -1)
+    {
+        // MISS but can fill it.
+        this->sets[addr.index][DIRECT_BLOCK].tag = addr.tag;
+        this->sets[addr.index][DIRECT_BLOCK].tag = true;
+        this->sets[addr.index][DIRECT_BLOCK].addr = addr;
+    }
+    else
+    {
+        // REPLACEMENT
+        utils::address *evictee = &(this->victim_cache[this->victim_lru].addr); 
+        // utils::block victim = this->sets[addr.index][DIRECT_BLOCK];
+        // this->victim_cache[this->victim_lru] = victim;
+        // this->victim_lru = !this->victim_lru;
+        // this->sets[addr.index][DIRECT_BLOCK].tag = addr.tag;
+        // std::cout << evictee << std::endl;
+        return evictee;
+    }
+
+    return NULL;
+}
+
+utils::address* Cache::run_cache(utils::address addr)
+{
+    if (this->associativity == DIRECT_MAP)
+    {
+        return this->direct_map(addr);
+    }
+    else if (this->replacement_policy == LRU)
+    {
+        std::cout << "LRU" << std::endl;
+    }
+    else if (this->replacement_policy == PLRU)
+    {
+        std::cout << "PLRU" << std::endl;
+    }
+    else if (this->replacement_policy == OPTIMAL)
+    {
+        std::cout << "OPTIMAL" << std::endl;
+    }
+    
+    return NULL;
+}
+
+utils::address* Cache::run_cache(char operation, std::string input_address)
 {
     utils::address addr = utils::parse_address(operation, input_address, this->block_size, this->number_of_sets);
     return this->run_cache(addr);

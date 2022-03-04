@@ -21,9 +21,11 @@ int main(int argc, char **argv)
     // Parses all arguments
     ArgumentWrapper arguments(argc, argv);
 
-    CacheHierarchy cache_hierarchy(arguments);
+    CacheHierarchy *cache_hierarchy = new CacheHierarchy(arguments);
 
-    cache_hierarchy.run_cache_hierarchy();
+    cache_hierarchy->run_cache_hierarchy();
+
+    delete cache_hierarchy;
 
 	return 0;
 }

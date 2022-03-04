@@ -18,8 +18,11 @@ CacheHierarchy::CacheHierarchy (ArgumentWrapper arguments)
 
     for (std::tuple<std::string, unsigned int, unsigned int> level : arguments.get_levels())
     {
-        Cache *cache = new Cache(level, arguments.get_block_size(), arguments.get_replacement_policy());
-        this->caches.push_back(cache);
+        if (std::get<1>(level) > 0 && std::get<2>(level) > 0)
+        {
+            Cache *cache = new Cache(level, arguments.get_block_size(), arguments.get_replacement_policy());
+            this->caches.push_back(cache);
+        }
     }
 }
 
@@ -47,10 +50,6 @@ void CacheHierarchy::run_cache_hierarchy(void)
         return;
     }
 
-    //     unsigned int number_of_hits = 0;
-    //     unsigned int number_of_misses = 0;
-    //     unsigned int number_of_replacements = 0;
-
     std::string in;
     while (file >> in)
     {
@@ -60,7 +59,11 @@ void CacheHierarchy::run_cache_hierarchy(void)
         file >> input_address;
 
         // TODO: Refactor for multiple caches.
-        utils::address addr = this->caches[0]->run_cache(operation, input_address);
+        utils::address *addr = this->caches[0]->run_cache(operation, input_address);
+        if (addr != NULL)
+        {
+            std::cout << (*addr) << std::endl;
+        }
     }
 
     file.close();
