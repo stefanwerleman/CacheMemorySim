@@ -45,33 +45,39 @@ Cache::Cache (std::tuple<std::string, unsigned int, unsigned int> level, unsigne
         this->sets[set] = new utils::block [this->associativity];
     }
 
-    this->victim_cache = new utils::block [2];
+    if (this->associativity <= 1)
+    {
+        this->victim_cache = new utils::block [2];
+    }
 }
 
 Cache::~Cache (void)
 {
+    // NOTE: It is important to use delete[] for any array types.
+
     if (this->sets != NULL)
     {
         for (int set = 0; set < this->number_of_sets; set++)
         {
-            delete this->sets[set];
+            delete[] this->sets[set];
         }
 
-        delete this->sets;
+        delete[] this->sets;
     }
 
     if (this->victim_cache != NULL)
     {
-        delete this->victim_cache;
+        delete[] this->victim_cache;
     }
 }
 
 utils::address* Cache::direct_map(utils::address addr)
 {
+    utils::address *evictee = NULL;
+
     if (addr.tag == this->sets[addr.index][DIRECT_BLOCK].tag)
     {
         // HIT
-        std::cout << "HIT" << std::endl;
     }
     else if (this->sets[addr.index][DIRECT_BLOCK].tag == -1)
     {
@@ -83,16 +89,14 @@ utils::address* Cache::direct_map(utils::address addr)
     else
     {
         // REPLACEMENT
-        utils::address *evictee = &(this->victim_cache[this->victim_lru].addr); 
-        // utils::block victim = this->sets[addr.index][DIRECT_BLOCK];
-        // this->victim_cache[this->victim_lru] = victim;
-        // this->victim_lru = !this->victim_lru;
-        // this->sets[addr.index][DIRECT_BLOCK].tag = addr.tag;
-        // std::cout << evictee << std::endl;
-        return evictee;
+        evictee = &(this->victim_cache[this->victim_lru].addr); 
+        utils::block victim = this->sets[addr.index][DIRECT_BLOCK];
+        this->victim_cache[this->victim_lru] = victim;
+        this->victim_lru = !this->victim_lru;
+        this->sets[addr.index][DIRECT_BLOCK].tag = addr.tag;
     }
 
-    return NULL;
+    return evictee;
 }
 
 utils::address* Cache::run_cache(utils::address addr)
@@ -103,15 +107,15 @@ utils::address* Cache::run_cache(utils::address addr)
     }
     else if (this->replacement_policy == LRU)
     {
-        std::cout << "LRU" << std::endl;
+        // std::cout << "LRU" << std::endl;
     }
     else if (this->replacement_policy == PLRU)
     {
-        std::cout << "PLRU" << std::endl;
+        // std::cout << "PLRU" << std::endl;
     }
     else if (this->replacement_policy == OPTIMAL)
     {
-        std::cout << "OPTIMAL" << std::endl;
+        // std::cout << "OPTIMAL" << std::endl;
     }
     
     return NULL;

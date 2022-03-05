@@ -60,10 +60,6 @@ void CacheHierarchy::run_cache_hierarchy(void)
 
         // TODO: Refactor for multiple caches.
         utils::address *addr = this->caches[0]->run_cache(operation, input_address);
-        if (addr != NULL)
-        {
-            std::cout << (*addr) << std::endl;
-        }
     }
 
     file.close();
