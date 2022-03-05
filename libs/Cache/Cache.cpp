@@ -38,15 +38,15 @@ Cache::Cache (std::tuple<std::string, unsigned int, unsigned int> level, unsigne
 
     this->replacement_policy = replacement_policy;
 
-    this->sets = new utils::block* [this->number_of_sets];
-
-    for (int set = 0; set < this->number_of_sets; set++)
-    {
-        this->sets[set] = new utils::block [this->associativity];
-    }
-
     if (this->associativity <= 1)
     {
+        this->sets = new utils::block* [this->number_of_sets];
+
+        for (int set = 0; set < this->number_of_sets; set++)
+        {
+            this->sets[set] = new utils::block [this->associativity];
+        }
+
         this->victim_cache = new utils::block [2];
     }
 }
@@ -107,7 +107,7 @@ utils::address* Cache::run_cache(utils::address addr)
     }
     else if (this->replacement_policy == LRU)
     {
-        // std::cout << "LRU" << std::endl;
+        
     }
     else if (this->replacement_policy == PLRU)
     {

@@ -1,7 +1,7 @@
-CC = g++
+CPP = g++
 OPT = -O3
 OPT = -g
-WARN = -Wall
+WARN = -Wall -Wextra
 CFLAGS = $(OPT) $(WARN) $(INC) $(LIB)
 
 # Other directories
@@ -27,7 +27,7 @@ all: sim_cache
 # rule for making sim_cache
 
 sim_cache: $(SIM_OBJ)
-	$(CC) -o sim_cache $(CFLAGS) $(SIM_OBJ) -lm
+	$(CPP) -o sim_cache $(CFLAGS) $(SIM_OBJ) -lm
 	@if [ ! -d $(BUILD) ]; then mkdir $(BUILD); fi
 	@mv $(SRC)*.o ./build/
 	@mv $(LIBS)*/*.o ./build/
@@ -37,7 +37,7 @@ sim_cache: $(SIM_OBJ)
 # generic rule for converting any .cc file to any .o file
  
 .cc.o:
-	$(CC) $(CFLAGS)  -c $*.cc
+	$(CPP) $(CFLAGS)  -c $*.cc
 
 
 detect_leak:
