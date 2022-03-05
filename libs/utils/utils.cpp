@@ -1,8 +1,39 @@
+#include <cmath>
+#include <bitset>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
+
 #include "../ArgumentWrapper/ArgumentWrapper.h"
 #include "../Cache/Cache.h"
-#include <string>
 #include "utils.h"
-#include <vector>
+
+utils::address utils::parse_address(char operation, std::string input_address, unsigned int block_size, unsigned int number_of_sets)
+{
+    utils::address addr;
+    
+    addr.operation = operation;
+    
+    unsigned mask;
+    std::stringstream address_stream;
+    address_stream << std::hex << input_address;
+    address_stream >> mask;
+    std::bitset<32> binary_addr(mask);
+    
+    unsigned int num_index_bits = log2(number_of_sets);
+    unsigned int num_offset_bits = log2(block_size);
+    unsigned int num_tag_bits = 32 - num_index_bits - num_offset_bits;
+
+    std::string address_string = binary_addr.to_string();
+
+    addr.addr = address_string;
+    addr.tag = std::stoi(address_string.substr(0, num_tag_bits), nullptr, 2);
+    addr.index = std::stoi(address_string.substr(num_tag_bits, num_index_bits), nullptr, 2);
+    addr.offset = std::stoi(address_string.substr(num_index_bits, num_offset_bits), nullptr, 2);
+
+    return addr;
+}
 
 // Prints an element in a clean way depending if it is the last element.
 std::string utils::get_separator(int current, int length)
@@ -17,31 +48,21 @@ std::string utils::get_separator(int current, int length)
     }
 }
 
-std::vector<Cache*> utils::create_memory_hierarchy(ArgumentWrapper arguments)
+std::ostream& utils::operator << (std::ostream &output, utils::address addr)
 {
-    std::vector<Cache*> memory_hierarchy;
-
-    for (int level = 0; level < arguments.get_number_of_caches(); level++)
-    {
-        // Checking if this is an existing cache.
-        unsigned int size = std::get<1>(arguments.get_levels()[level]);
-        unsigned int associativity = std::get<2>(arguments.get_levels()[level]);
-
-        if (size > 0 && associativity > 0)
-        {
-            Cache *cache = new Cache(arguments);
-            memory_hierarchy.push_back(cache);
-        }
-
-    }
-
-    return memory_hierarchy;
+    output << "Address: {" << std::endl;
+    output << "\taddress: " << addr.addr << "," << std::endl;
+    output << "\toperation: " << addr.operation << "," << std::endl;
+    output << "\ttag: " << addr.tag << "," << std::endl;
+    output << "\tindex: " << addr.index << "," << std::endl;
+    output << "\toffset: " << addr.offset << std::endl;
+    output << "}" <<std::endl;
+    
+    return output;
 }
 
-void utils::destroy_memory_hierarchy(std::vector<Cache*> memory_hierarchy)
+std::ostream& utils::operator << (std::ostream &output, utils::block block)
 {
-    for (Cache *cache: memory_hierarchy)
-    {
-        delete cache;
-    }
+    output << "(V: " << block.valid << ", T: " << block.tag << ")";
+    return output;
 }
