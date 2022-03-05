@@ -37,6 +37,10 @@ class Cache
     std::unordered_map<unsigned int, utils::block> **set_maps;
     unsigned int *mru;
 
+    // PLRU
+    bool **plru_tree;
+    unsigned int *next;
+
     static unsigned int number_of_caches;
     static unsigned int block_size;    
 

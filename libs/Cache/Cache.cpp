@@ -63,6 +63,33 @@ Cache::Cache (std::tuple<std::string, unsigned int, unsigned int> level, unsigne
 
         this->mru = new unsigned [this->number_of_sets];
     }
+
+    if (this->replacement_policy == PLRU)
+    {
+        this->set_maps = new std::unordered_map<unsigned int, utils::block>* [this->number_of_sets];
+
+        for (int set = 0; set < this->number_of_sets; set++)
+        {
+            std::unordered_map<unsigned int, utils::block> *new_set = new std::unordered_map<unsigned int, utils::block>;
+            this->set_maps[set] = new_set;
+        }
+
+        this->sets = new utils::block* [this->number_of_sets];
+
+        for (int set = 0; set < this->number_of_sets; set++)
+        {
+            this->sets[set] = new utils::block [this->associativity];
+        }
+
+        this->plru_tree = new bool* [this->number_of_sets];
+
+        for (int set = 0; set < this->number_of_sets; set++)
+        {
+            this->plru_tree[set] = new bool [this->associativity - 1];
+        }
+
+        this->next = new unsigned int [this->associativity];
+    }
 }
 
 Cache::~Cache (void)
@@ -97,6 +124,16 @@ Cache::~Cache (void)
     if (this->mru != NULL)
     {
         delete [] this->mru;
+    }
+
+    if (this->plru_tree != NULL)
+    {
+        for (int set = 0; set < this->number_of_sets; set++)
+        {
+            delete [] this->plru_tree[set];
+        }
+
+        delete [] this->plru_tree;
     }
 }
 
@@ -188,7 +225,12 @@ utils::address Cache::lru(utils::address addr)
 utils::address Cache::plru(utils::address addr)
 {
     utils::address evictee;
-    std::cout << "PLRU" << std::endl;
+    utils::block *current_set = this->sets[addr.index];
+    std::unordered_map<unsigned int, utils::block> *current_set = this->set_maps[addr.index];
+    bool *current_plru_tree = this->plru_tree[addr.index];
+
+    std::cout << current_set[0] << std::endl;
+
     return evictee;
 }
 
