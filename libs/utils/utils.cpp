@@ -63,6 +63,6 @@ std::ostream& utils::operator << (std::ostream &output, utils::address addr)
 
 std::ostream& utils::operator << (std::ostream &output, utils::block block)
 {
-    output << "(V: " << block.valid << ", T: " << block.tag << ")";
+    output << "(V: " << block.valid << ", T: " << block.tag << ", S: " << block.sequence_number << ")";
     return output;
 }

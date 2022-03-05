@@ -59,7 +59,7 @@ void CacheHierarchy::run_cache_hierarchy(void)
         file >> input_address;
 
         // TODO: Refactor for multiple caches.
-        utils::address *addr = this->caches[0]->run_cache(operation, input_address);
+        utils::address addr = this->caches[0]->run_cache(operation, input_address);
     }
 
     file.close();
