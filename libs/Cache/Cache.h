@@ -40,6 +40,7 @@ class Cache
     // PLRU
     bool **plru_tree;
     unsigned int *next;
+    std::unordered_map<unsigned int, unsigned int> **hash_map;
 
     static unsigned int number_of_caches;
     static unsigned int block_size;    

@@ -87,8 +87,6 @@ Cache::Cache (std::tuple<std::string, unsigned int, unsigned int> level, unsigne
         {
             this->plru_tree[set] = new bool [this->associativity - 1];
         }
-
-        this->next = new unsigned int [this->associativity];
     }
 }
 
@@ -177,23 +175,11 @@ utils::address Cache::lru(utils::address addr)
         if (current_set->size() < this->associativity)
         {
             // MISS
-            new_block.addr = addr;
-            new_block.tag = addr.tag;
-            new_block.valid = true;
-            new_block.sequence_number = this->mru[addr.index];
-            this->mru[addr.index]++;
-
             current_set->emplace(addr.tag, new_block);
         }
         else
         {
             // REPLACE
-            new_block.addr = addr;
-            new_block.tag = addr.tag;
-            new_block.valid = true;
-            new_block.sequence_number = this->mru[addr.index];
-            this->mru[addr.index]++;
-
             unsigned int lru = UINT16_MAX;
             utils::block evictee_block;
 
@@ -206,10 +192,15 @@ utils::address Cache::lru(utils::address addr)
                 }
             }
 
+            new_block.addr = addr;
+            new_block.tag = addr.tag;
+            new_block.valid = true;
+            new_block.sequence_number = this->mru[addr.index];
+            this->mru[addr.index]++;
+
             current_set->erase(evictee_block.tag);
             current_set->emplace(addr.tag, new_block);
             evictee = evictee_block.addr;
-            return evictee;
         }
     }
     else
@@ -226,10 +217,103 @@ utils::address Cache::plru(utils::address addr)
 {
     utils::address evictee;
     utils::block *current_set = this->sets[addr.index];
-    std::unordered_map<unsigned int, utils::block> *current_set = this->set_maps[addr.index];
+    std::unordered_map<unsigned int, utils::block> *set_map = this->set_maps[addr.index];
     bool *current_plru_tree = this->plru_tree[addr.index];
+    bool needs_update = false;
 
-    std::cout << current_set[0] << std::endl;
+    unsigned int high = this->associativity - 2;
+    unsigned int low = 0;
+    unsigned int mid = low + ((high - low) / 2);
+
+
+    utils::block current_block;
+
+    if (set_map->find(addr.tag) != set_map->end())
+    {
+        // HIT
+        current_block = set_map->at(addr.tag);
+        needs_update = true;
+    }
+    else
+    {
+        utils::block new_block;
+        if (set_map->size() < this->associativity)
+        {
+            // MISS FILL
+            new_block.way = set_map->size();
+            needs_update = true;
+        }
+        else
+        {
+            // REPLACE
+            utils::block evictee_block;
+
+            while (high != low)
+            {
+                current_plru_tree[mid] = !current_plru_tree[mid];
+
+                if (current_plru_tree[mid] == true)
+                {
+                    low = mid;
+                    mid = low + ceil((high - low) / 2);
+                }
+                else
+                {
+                    high = mid;
+                    mid = low + ((high - low) / 2);
+                }
+            }
+
+            if (current_plru_tree[high] == true)
+            {
+                evictee_block = current_set[high + 1];
+            }
+            else
+            {
+                evictee_block = current_set[high];
+            }
+
+            new_block.way = evictee_block.way;
+            set_map->erase(evictee_block.tag);
+            evictee = evictee_block.addr;
+            needs_update = false;
+        }
+
+        new_block.addr = addr;
+        new_block.tag = addr.tag;
+        new_block.valid = true;
+        set_map->emplace(addr.tag, new_block);
+        current_set[new_block.way] = new_block;
+
+        current_block = new_block;
+    }
+    // std::cout << low << " " << mid << " " << high << std::endl;
+    // std::cout << current_block.way << std::endl;
+
+    if (needs_update)
+    {
+        while (high != low)
+        {
+            if (current_block.way <= mid)
+            {
+                current_plru_tree[mid] = false;
+                high = mid;
+                mid = low + ((high - low) / 2);
+            }
+            else
+            {
+                current_plru_tree[mid] = true;
+                low = mid;
+                mid = low + ceil((high - low) / 2);
+            }
+
+            // We flipped the last bit. Done.
+            if (mid == low || mid == high)
+            {
+                break;
+            }
+        }
+    }
 
     return evictee;
 }
