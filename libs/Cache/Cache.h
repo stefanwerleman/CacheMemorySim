@@ -46,6 +46,7 @@ class Cache
 
         utils::address direct_map(utils::address addr);
         utils::address lru(utils::address addr);
+        utils::address plru(utils::address addr);
 
         utils::address run_cache(utils::address addr);
         utils::address run_cache(char operation, std::string input_address);

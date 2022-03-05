@@ -185,6 +185,13 @@ utils::address Cache::lru(utils::address addr)
     return evictee;
 }
 
+utils::address Cache::plru(utils::address addr)
+{
+    utils::address evictee;
+    std::cout << "PLRU" << std::endl;
+    return evictee;
+}
+
 utils::address Cache::run_cache(utils::address addr)
 {
     utils::address evictee;
@@ -198,7 +205,7 @@ utils::address Cache::run_cache(utils::address addr)
     }
     else if (this->replacement_policy == PLRU)
     {
-        // std::cout << "PLRU" << std::endl;
+        evictee = this->plru(addr);
     }
     else if (this->replacement_policy == OPTIMAL)
     {

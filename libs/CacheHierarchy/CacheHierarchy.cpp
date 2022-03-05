@@ -60,6 +60,8 @@ void CacheHierarchy::run_cache_hierarchy(void)
 
         // TODO: Refactor for multiple caches.
         utils::address addr = this->caches[0]->run_cache(operation, input_address);
+
+        // TODO: Non-returned address will have -1 as values. Make sure you ignore them.
     }
 
     file.close();

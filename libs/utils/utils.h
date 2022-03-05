@@ -17,9 +17,9 @@ namespace utils
     {
         std::string addr;
         char operation;
-        unsigned int tag = -1;
-        unsigned int index = -1;
-        unsigned int offset = -1;
+        int tag = -1;
+        int index = -1;
+        int offset = -1;
     } address;
 
     typedef struct block
