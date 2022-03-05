@@ -17,15 +17,10 @@ namespace utils
     {
         std::string addr;
         char operation;
-        unsigned int tag;
-        unsigned int index;
-        unsigned int offset;
+        unsigned int tag = -1;
+        unsigned int index = -1;
+        unsigned int offset = -1;
     } address;
-
-    address parse_address(char operation, 
-                          std::string input_address, 
-                          unsigned int block_size, 
-                          unsigned int number_of_sets);
 
     typedef struct block
     {
@@ -33,6 +28,12 @@ namespace utils
         bool valid = false;
         utils::address addr;
     } block;
+    
+    address parse_address(char operation, 
+                          std::string input_address, 
+                          unsigned int block_size, 
+                          unsigned int number_of_sets);
+
 
     // Prints an element in a clean way depending if it is the last element.
     std::string get_separator(int current, int length);
