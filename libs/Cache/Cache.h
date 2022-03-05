@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <tuple>
+#include <unordered_set>
 #include <unordered_map>
 #include <vector>
 
@@ -37,10 +38,14 @@ class Cache
     std::unordered_map<unsigned int, utils::block> **set_maps;
     unsigned int *mru;
 
-    // PLRU
+    // PLRU Policy
     bool **plru_tree;
     unsigned int *next;
     std::unordered_map<unsigned int, unsigned int> **hash_map;
+
+    // OPTIMAL Policy
+    unsigned int *traces;
+    std::unordered_set<unsigned int> *optimal_set;
 
     static unsigned int number_of_caches;
     static unsigned int block_size;    
