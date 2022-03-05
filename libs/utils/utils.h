@@ -26,6 +26,7 @@ namespace utils
     {
         int tag = EMPTY_BIT;
         bool valid = false;
+        int sequence_number = EMPTY_BIT;
         utils::address addr;
     } block;
     

@@ -4,6 +4,8 @@
 #include <iostream>
 #include <string>
 #include <tuple>
+#include <unordered_map>
+#include <vector>
 
 #include "../ArgumentWrapper/ArgumentWrapper.h"
 #include "../utils/utils.h"
@@ -31,6 +33,10 @@ class Cache
     utils::block *victim_cache;
     utils::block **sets;
 
+    // LRU Policy
+    std::unordered_map<unsigned int, utils::block> **set_maps;
+    unsigned int *mru;
+
     static unsigned int number_of_caches;
     static unsigned int block_size;    
 
@@ -38,10 +44,11 @@ class Cache
         Cache (std::tuple<std::string, unsigned int, unsigned int>, unsigned int block_size, std::string replacement_policy);
         ~Cache (void);
 
-        utils::address* direct_map(utils::address addr);
+        utils::address direct_map(utils::address addr);
+        utils::address lru(utils::address addr);
 
-        utils::address* run_cache(utils::address addr);
-        utils::address* run_cache(char operation, std::string input_address);
+        utils::address run_cache(utils::address addr);
+        utils::address run_cache(char operation, std::string input_address);
 
         unsigned int get_size(void);
         unsigned int get_associativity(void);
