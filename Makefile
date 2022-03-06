@@ -27,7 +27,7 @@ all: sim_cache
 # rule for making sim_cache
 
 sim_cache: $(SIM_OBJ)
-	$(CPP) -o sim_cache $(CFLAGS) $(SIM_OBJ) -lm
+	$(CPP) -o sim_cache $(CFLAGS) $(SIM_OBJ) $(OPT) -lm
 	@if [ ! -d $(BUILD) ]; then mkdir $(BUILD); fi
 	@mv $(SRC)*.o ./build/
 	@mv $(LIBS)*/*.o ./build/
@@ -45,6 +45,8 @@ detect_leak:
 	valgrind --leak-check=yes ./sim_cache 32 8192 4 262144 8 0 0 gcc_trace.txt
 	@echo "-----------DONE WITH MEMORY LEAK DETECTION-----------"
 
+trace_seg_fault:
+	gdb ./sim_cache 32 8192 4 262144 8 2 0 gcc_trace.txt
 
 # type "make clean" to remove all .o files plus the sim_cache binary
 

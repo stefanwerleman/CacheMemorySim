@@ -35,6 +35,15 @@ utils::address utils::parse_address(char operation, std::string input_address, u
     return addr;
 }
 
+utils::address utils::parse_address(std::string address, unsigned int block_size, unsigned int number_of_sets)
+{
+    utils::address addr;
+    std::cout << address << std::endl;
+    std::cout << block_size << std::endl;
+    std::cout << number_of_sets << std::endl;
+    return addr;
+}
+
 // Prints an element in a clean way depending if it is the last element.
 std::string utils::get_separator(int current, int length)
 {

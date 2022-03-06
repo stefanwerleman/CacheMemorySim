@@ -44,14 +44,17 @@ class Cache
     std::unordered_map<unsigned int, unsigned int> **hash_map;
 
     // OPTIMAL Policy
-    unsigned int *traces;
     std::unordered_set<unsigned int> *optimal_set;
-
+    
+    static utils::address *traces;
     static unsigned int number_of_caches;
     static unsigned int block_size;    
 
     public:
-        Cache (std::tuple<std::string, unsigned int, unsigned int>, unsigned int block_size, std::string replacement_policy);
+        Cache (std::tuple<std::string, unsigned int, unsigned int>, 
+               unsigned int block_size, 
+               std::string replacement_policy);
+
         ~Cache (void);
 
         utils::address direct_map(utils::address addr);
@@ -60,6 +63,8 @@ class Cache
 
         utils::address run_cache(utils::address addr);
         utils::address run_cache(char operation, std::string input_address);
+
+        void set_traces(std::string *traces);
 
         unsigned int get_size(void);
         unsigned int get_associativity(void);

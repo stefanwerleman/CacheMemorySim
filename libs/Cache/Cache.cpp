@@ -2,6 +2,7 @@
 #include <cmath>
 #include <climits>
 #include <bitset>
+#include <stdlib.h>
 #include <sstream>
 #include <string>
 #include <tuple>
@@ -12,6 +13,9 @@
 
 unsigned int Cache::number_of_caches = 0;
 unsigned int Cache::block_size = 0;
+utils::address *Cache::traces = NULL;
+
+const int NUMBER_OF_TRACES = 100001;
 
 const unsigned int UPPER_BOUND = UINT_MAX;
 const unsigned int DIRECT_BLOCK = 0;
@@ -345,6 +349,25 @@ utils::address Cache::run_cache(char operation, std::string input_address)
 {
     utils::address addr = utils::parse_address(operation, input_address, this->block_size, this->number_of_sets);
     return this->run_cache(addr);
+}
+
+void Cache::set_traces(std::string *traces)
+{
+    if (this->replacement_policy == OPTIMAL)
+    {
+        if (traces != NULL)
+        {
+            this->traces = new utils::address [NUMBER_OF_TRACES];
+            for (int trace = 0; trace < NUMBER_OF_TRACES; trace++)
+            {
+                this->traces[trace] = utils::parse_address(traces[trace], block_size, this->number_of_sets);
+            }
+        }
+        else
+        {
+            exit(EXIT_FAILURE);
+        }
+    }
 }
 
 unsigned int Cache::get_size(void)
