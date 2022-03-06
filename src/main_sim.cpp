@@ -22,6 +22,16 @@ int main(int argc, char **argv)
 
     CacheHierarchy *cache_hierarchy = new CacheHierarchy(arguments);
 
+    if (arguments.get_replacement_policy() == "OPTIMAL")
+    {
+        cache_hierarchy->get_traces();
+    }
+
+    if (arguments.get_replacement_policy() == "OPTIMAL")
+    {
+        cache_hierarchy->get_traces();
+    }
+    
     cache_hierarchy->run_cache_hierarchy();
 
     delete cache_hierarchy;

@@ -1,5 +1,7 @@
 #include <fstream>
 #include <string>
+#include <sstream>
+#include <stdlib.h>
 #include <tuple>
 #include <vector>
 
@@ -11,10 +13,17 @@
 const std::string NON_INCLUSIVE = "NON-INCLUSIVE";
 const std::string INCLUSIVE = "INCLUSIVE";
 
+const int NUMBER_OF_TRACES = 100001;
+
 CacheHierarchy::CacheHierarchy (ArgumentWrapper arguments)
 {
     this->inclusion_property = arguments.get_inclusion_property();
     this->trace_file = arguments.get_trace_file();
+
+    if (arguments.get_replacement_policy() == "OPTIMAL")
+    {
+        this->traces = new std::string [NUMBER_OF_TRACES];
+    }
 
     for (std::tuple<std::string, unsigned int, unsigned int> level : arguments.get_levels())
     {
@@ -38,10 +47,21 @@ CacheHierarchy::~CacheHierarchy(void)
             }
         }
     }
+
+    if (this->traces != NULL)
+    {
+        delete [] this->traces;
+    }
 }
 
 void CacheHierarchy::run_cache_hierarchy(void)
 {
+    if (this->traces != NULL)
+    {
+        this->get_traces();
+        this->caches[0]->set_traces(this->traces);
+    }
+
     std::ifstream file("./data/traces/" + this->trace_file);
 
     if (!file.is_open())
@@ -51,6 +71,7 @@ void CacheHierarchy::run_cache_hierarchy(void)
     }
 
     std::string in;
+    int trace_loc = 0;
     while (file >> in)
     {
         char operation = in[0];
@@ -59,9 +80,32 @@ void CacheHierarchy::run_cache_hierarchy(void)
         file >> input_address;
 
         // TODO: Refactor for multiple caches.
-        utils::address addr = this->caches[0]->run_cache(operation, input_address);
+        utils::address addr = this->caches[0]->run_cache(operation, input_address, trace_loc);
+        trace_loc++;
 
         // TODO: Non-returned address will have -1 as values. Make sure you ignore them.
+    }
+
+    file.close();
+}
+
+// Have to call a separate method outside of the constructor for read file to work.
+void CacheHierarchy::get_traces(void)
+{
+    std::ifstream file("./data/traces/" + this->trace_file);
+
+    if (!file.is_open())
+    {
+        std::cout << "File failed to open." << std::endl;
+        exit(EXIT_FAILURE);
+        return;
+    }
+
+        // std::cout << in << std::endl;
+    std::string in;
+    for (int input = 0; getline(file, in); input++)
+    {   
+        this->traces[input] = in;
     }
 
     file.close();

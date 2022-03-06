@@ -20,6 +20,7 @@ namespace utils
         int tag = -1;
         int index = -1;
         int offset = -1;
+        int trace_loc = -1;
     } address;
 
     typedef struct block
@@ -36,6 +37,7 @@ namespace utils
                           unsigned int block_size, 
                           unsigned int number_of_sets);
 
+    address parse_address(std::string address, unsigned int block_size, unsigned int number_of_sets);
 
     // Prints an element in a clean way depending if it is the last element.
     std::string get_separator(int current, int length);
