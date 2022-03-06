@@ -20,6 +20,7 @@ namespace utils
         int tag = -1;
         int index = -1;
         int offset = -1;
+        int trace_loc = -1;
     } address;
 
     typedef struct block

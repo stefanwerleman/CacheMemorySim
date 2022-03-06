@@ -71,6 +71,7 @@ void CacheHierarchy::run_cache_hierarchy(void)
     }
 
     std::string in;
+    int trace_loc = 0;
     while (file >> in)
     {
         char operation = in[0];
@@ -79,7 +80,8 @@ void CacheHierarchy::run_cache_hierarchy(void)
         file >> input_address;
 
         // TODO: Refactor for multiple caches.
-        utils::address addr = this->caches[0]->run_cache(operation, input_address);
+        utils::address addr = this->caches[0]->run_cache(operation, input_address, trace_loc);
+        trace_loc++;
 
         // TODO: Non-returned address will have -1 as values. Make sure you ignore them.
     }

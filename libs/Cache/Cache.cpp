@@ -92,6 +92,24 @@ Cache::Cache (std::tuple<std::string, unsigned int, unsigned int> level, unsigne
             this->plru_tree[set] = new bool [this->associativity - 1];
         }
     }
+
+    if (this->replacement_policy == OPTIMAL)
+    {
+        this->sets = new utils::block* [this->number_of_sets];
+
+        for (int set = 0; set < this->number_of_sets; set++)
+        {
+            this->sets[set] = new utils::block [this->associativity];
+        }
+
+        this->set_maps = new std::unordered_map<unsigned int, utils::block>* [this->number_of_sets];
+
+        for (int set = 0; set < this->number_of_sets; set++)
+        {
+            std::unordered_map<unsigned int, utils::block> *new_set = new std::unordered_map<unsigned int, utils::block>;
+            this->set_maps[set] = new_set;
+        }
+    }
 }
 
 Cache::~Cache (void)
@@ -291,8 +309,6 @@ utils::address Cache::plru(utils::address addr)
 
         current_block = new_block;
     }
-    // std::cout << low << " " << mid << " " << high << std::endl;
-    // std::cout << current_block.way << std::endl;
 
     if (needs_update)
     {
@@ -322,6 +338,68 @@ utils::address Cache::plru(utils::address addr)
     return evictee;
 }
 
+utils::address Cache::optimal(utils::address addr)
+{
+    utils::address evictee;
+    utils::block *current_set = this->sets[addr.index];
+    std::unordered_map<unsigned int, utils::block> *set_map = this->set_maps[addr.index];
+    std::unordered_set<unsigned int> current_opt;
+
+    if (set_map->find(addr.tag) != set_map->end())
+    {
+        // HIT
+    }
+    else
+    {
+        utils::block new_block;
+        if (set_map->size() < this->associativity)
+        {
+            // MISS FILL
+            new_block.way = set_map->size();
+        }
+        else
+        {
+            // REPLACE
+            utils::block evictee_block;
+
+            // Check RHS
+            for (int i = addr.trace_loc; i < NUMBER_OF_TRACES && current_opt.size() < this->associativity; i++)
+            {
+                if ((set_map->find(this->traces[i].tag) != set_map->end()) && (current_opt.find(traces[i].tag) == current_opt.end()))
+                {
+                    evictee_block = set_map->at(this->traces[i].tag);
+                    current_opt.emplace(traces[i].tag);
+                }
+            }
+
+            if (current_opt.size() < this->associativity)
+            {
+                // Check LHS
+                for (int i = 0; i < addr.trace_loc && current_opt.size() < this->associativity; i++)
+                {
+                    if ((set_map->find(this->traces[i].tag) != set_map->end()) && (current_opt.find(traces[i].tag) == current_opt.end()))
+                    {
+                        evictee_block = set_map->at(this->traces[i].tag);
+                        current_opt.emplace(traces[i].tag);
+                    }
+                }
+            }
+
+            new_block.way = evictee_block.way;
+            set_map->erase(evictee_block.tag);
+            evictee = evictee_block.addr;
+        }
+
+        new_block.addr = addr;
+        new_block.tag = addr.tag;
+        new_block.valid = true;
+        set_map->emplace(addr.tag, new_block);
+        current_set[new_block.way] = new_block;
+    }
+
+    return evictee;
+}
+
 utils::address Cache::run_cache(utils::address addr)
 {
     utils::address evictee;
@@ -339,15 +417,16 @@ utils::address Cache::run_cache(utils::address addr)
     }
     else if (this->replacement_policy == OPTIMAL)
     {
-        // std::cout << "OPTIMAL" << std::endl;
+        evictee = this->optimal(addr);
     }
 
     return evictee;
 }
 
-utils::address Cache::run_cache(char operation, std::string input_address)
+utils::address Cache::run_cache(char operation, std::string input_address, int trace_loc)
 {
     utils::address addr = utils::parse_address(operation, input_address, this->block_size, this->number_of_sets);
+    addr.trace_loc = trace_loc;
     return this->run_cache(addr);
 }
 
@@ -360,7 +439,9 @@ void Cache::set_traces(std::string *traces)
             this->traces = new utils::address [NUMBER_OF_TRACES];
             for (int trace = 0; trace < NUMBER_OF_TRACES; trace++)
             {
-                this->traces[trace] = utils::parse_address(traces[trace], block_size, this->number_of_sets);
+                utils::address trace_addr = utils::parse_address(traces[trace], block_size, this->number_of_sets);
+                trace_addr.trace_loc = trace;
+                this->traces[trace] = trace_addr;
             }
         }
         else

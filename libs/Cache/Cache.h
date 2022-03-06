@@ -42,11 +42,10 @@ class Cache
     bool **plru_tree;
     unsigned int *next;
     std::unordered_map<unsigned int, unsigned int> **hash_map;
-
-    // OPTIMAL Policy
-    std::unordered_set<unsigned int> *optimal_set;
     
+    // Optimal Policy
     static utils::address *traces;
+
     static unsigned int number_of_caches;
     static unsigned int block_size;    
 
@@ -60,9 +59,10 @@ class Cache
         utils::address direct_map(utils::address addr);
         utils::address lru(utils::address addr);
         utils::address plru(utils::address addr);
+        utils::address optimal(utils::address addr);
 
         utils::address run_cache(utils::address addr);
-        utils::address run_cache(char operation, std::string input_address);
+        utils::address run_cache(char operation, std::string input_address, int trace_loc);
 
         void set_traces(std::string *traces);
 
