@@ -72,6 +72,7 @@ void CacheHierarchy::run_cache_hierarchy(void)
 
     std::string in;
     int trace_loc = 0;
+
     while (file >> in)
     {
         char operation = in[0];
@@ -91,7 +92,7 @@ void CacheHierarchy::run_cache_hierarchy(void)
 
             addr = this->caches[1]->run_cache(operation, input_address, trace_loc);
             
-            if (addr.tag != -1)
+            if (this->inclusion_property == INCLUSIVE && addr.tag != -1)
             {
                 utils::address invalid_addr = this->caches[0]->invalidate(addr);
             }

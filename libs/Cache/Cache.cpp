@@ -169,7 +169,7 @@ utils::address Cache::direct_map(utils::address addr)
     {
         // MISS but can fill it.
         this->sets[addr.index][DIRECT_BLOCK].tag = addr.tag;
-        this->sets[addr.index][DIRECT_BLOCK].tag = true;
+        this->sets[addr.index][DIRECT_BLOCK].valid = true;
         this->sets[addr.index][DIRECT_BLOCK].addr = addr;
     }
     else
@@ -180,6 +180,7 @@ utils::address Cache::direct_map(utils::address addr)
         this->victim_cache[this->victim_lru] = victim;
         this->victim_lru = !this->victim_lru;
         this->sets[addr.index][DIRECT_BLOCK].tag = addr.tag;
+        this->sets[addr.index][DIRECT_BLOCK].addr = addr;
     }
 
     return evictee;
@@ -193,6 +194,12 @@ utils::address Cache::lru(utils::address addr)
     if (current_set->find(addr.tag) == current_set->end())
     {
         utils::block new_block;
+
+        new_block.addr = addr;
+        new_block.tag = addr.tag;
+        new_block.valid = true;
+        new_block.sequence_number = this->mru[addr.index];
+        this->mru[addr.index]++;
         
         if (current_set->size() < this->associativity)
         {
@@ -214,12 +221,6 @@ utils::address Cache::lru(utils::address addr)
                 }
             }
 
-            new_block.addr = addr;
-            new_block.tag = addr.tag;
-            new_block.valid = true;
-            new_block.sequence_number = this->mru[addr.index];
-            this->mru[addr.index]++;
-
             current_set->erase(evictee_block.tag);
             current_set->emplace(addr.tag, new_block);
             evictee = evictee_block.addr;
@@ -231,6 +232,7 @@ utils::address Cache::lru(utils::address addr)
         current_set->at(addr.tag).sequence_number = this->mru[addr.index];
         this->mru[addr.index]++;
     }
+
 
     return evictee;
 }
@@ -402,9 +404,40 @@ utils::address Cache::optimal(utils::address addr)
 
 utils::address Cache::invalidate(utils::address addr)
 {
-    std::unordered_map<unsigned int, utils::block> *current_set = this->set_maps[addr.index];
+    if (this->associativity <= 1)
+    {
+        utils::block *current_set = this->sets[addr.index];
 
-    std::cout << current_set->size() << std::endl;
+        if (current_set != NULL && addr.index < this->number_of_sets && addr.tag == current_set->addr.tag)
+        {
+            current_set->valid = false;
+        }
+    }
+    else if (this->replacement_policy == LRU)
+    {
+        std::unordered_map<unsigned int, utils::block> *current_set = this->set_maps[addr.index];
+
+        if (current_set != NULL && addr.index < this->number_of_sets && (current_set->find(addr.tag) != current_set->end()))
+        {
+             current_set->at(addr.tag).valid = false;
+        }
+    }
+    else if (this->replacement_policy == PLRU || this->replacement_policy == OPTIMAL)
+    {
+        std::unordered_map<unsigned int, utils::block> *current_set_map = this->set_maps[addr.index];
+
+        if (current_set_map != NULL && addr.index < this->number_of_sets && (current_set_map->find(addr.tag) != current_set_map->end()))
+        {
+             current_set_map->at(addr.tag).valid = false;
+        }
+
+        utils::block *current_set = this->sets[addr.index];
+
+        if (current_set != NULL && addr.index < this->number_of_sets && addr.tag == current_set->addr.tag)
+        {
+            current_set->valid = false;
+        }
+    }
 
     return addr;
 }
