@@ -27,6 +27,7 @@ namespace utils
     {
         int tag = EMPTY_BIT;
         bool valid = false;
+        bool dirty_bit = false;
         int sequence_number = EMPTY_BIT;    // LRU
         int way = -1;                       // PLRU
         utils::address addr;
