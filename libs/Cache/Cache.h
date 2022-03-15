@@ -60,9 +60,11 @@ class Cache
         utils::address lru(utils::address addr);
         utils::address plru(utils::address addr);
         utils::address optimal(utils::address addr);
+        utils::address invalidate(utils::address addr);
 
         utils::address run_cache(utils::address addr);
         utils::address run_cache(char operation, std::string input_address, int trace_loc);
+
 
         void set_traces(std::string *traces);
 

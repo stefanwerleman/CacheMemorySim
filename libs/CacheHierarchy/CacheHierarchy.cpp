@@ -80,7 +80,23 @@ void CacheHierarchy::run_cache_hierarchy(void)
         file >> input_address;
 
         // TODO: Refactor for multiple caches.
-        utils::address addr = this->caches[0]->run_cache(operation, input_address, trace_loc);
+        
+        if (this->caches[0]->get_number_of_caches() == 1)
+        {
+            utils::address addr = this->caches[0]->run_cache(operation, input_address, trace_loc);
+        }
+        else
+        {
+            utils::address addr = this->caches[0]->run_cache(operation, input_address, trace_loc);
+
+            addr = this->caches[1]->run_cache(operation, input_address, trace_loc);
+            
+            if (addr.tag != -1)
+            {
+                utils::address invalid_addr = this->caches[0]->invalidate(addr);
+            }
+        }
+
         trace_loc++;
 
         // TODO: Non-returned address will have -1 as values. Make sure you ignore them.

@@ -400,6 +400,15 @@ utils::address Cache::optimal(utils::address addr)
     return evictee;
 }
 
+utils::address Cache::invalidate(utils::address addr)
+{
+    std::unordered_map<unsigned int, utils::block> *current_set = this->set_maps[addr.index];
+
+    std::cout << current_set->size() << std::endl;
+
+    return addr;
+}
+
 utils::address Cache::run_cache(utils::address addr)
 {
     utils::address evictee;
