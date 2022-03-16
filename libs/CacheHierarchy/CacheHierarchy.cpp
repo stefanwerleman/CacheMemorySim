@@ -86,13 +86,34 @@ void CacheHierarchy::run_cache_hierarchy(void)
         
         if (this->caches[L1_CACHE]->get_number_of_caches() == 1)
         {
-            utils::address addr = this->caches[L1_CACHE]->run_cache(operation, input_address, trace_loc);
+            utils::address addr = this->caches[L1_CACHE]->run_cache(operation, 
+                                                                    input_address, 
+                                                                    trace_loc,
+                                                                    &(this->l1_reads),
+                                                                    &(this->l1_read_misses),
+                                                                    &(this->l1_writes),
+                                                                    &(this->l1_write_misses),
+                                                                    &(this->l1_write_backs));
         }
         else
         {
-            utils::address addr = this->caches[L1_CACHE]->run_cache(operation, input_address, trace_loc);
+            utils::address addr = this->caches[L1_CACHE]->run_cache(operation, 
+                                                                    input_address, 
+                                                                    trace_loc,
+                                                                    &(this->l1_reads),
+                                                                    &(this->l1_read_misses),
+                                                                    &(this->l1_writes),
+                                                                    &(this->l1_write_misses),
+                                                                    &(this->l1_write_backs));
 
-            addr = this->caches[L2_CACHE]->run_cache(operation, input_address, trace_loc);
+            addr = this->caches[L2_CACHE]->run_cache(operation, 
+                                                     input_address, 
+                                                     trace_loc,
+                                                     &(this->l2_reads),
+                                                    &(this->l2_read_misses),
+                                                    &(this->l2_writes),
+                                                    &(this->l2_write_misses),
+                                                    &(this->l2_write_backs));
             
             if (this->inclusion_property == INCLUSIVE && addr.tag != -1)
             {
