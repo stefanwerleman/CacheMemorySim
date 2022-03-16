@@ -38,7 +38,11 @@ namespace utils
                           unsigned int block_size, 
                           unsigned int number_of_sets);
 
-    address parse_address(std::string address, unsigned int block_size, unsigned int number_of_sets);
+    address parse_address(std::string address, 
+                          unsigned int block_size, 
+                          unsigned int number_of_sets);
+
+    void write_back(utils::block *block);
 
     // Prints an element in a clean way depending if it is the last element.
     std::string get_separator(int current, int length);

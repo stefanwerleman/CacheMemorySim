@@ -46,6 +46,11 @@ utils::address utils::parse_address(std::string address, unsigned int block_size
     return utils::parse_address(operation, input_address, block_size, number_of_sets);
 }
 
+void utils::write_back(utils::block *block)
+{
+    block->dirty_bit = true;
+}
+
 // Prints an element in a clean way depending if it is the last element.
 std::string utils::get_separator(int current, int length)
 {
