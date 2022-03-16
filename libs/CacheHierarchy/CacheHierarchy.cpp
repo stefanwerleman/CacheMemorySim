@@ -12,6 +12,8 @@
 
 const std::string NON_INCLUSIVE = "NON-INCLUSIVE";
 const std::string INCLUSIVE = "INCLUSIVE";
+const unsigned int L1_CACHE = 0;
+const unsigned int L2_CACHE = 1;
 
 const int NUMBER_OF_TRACES = 100001;
 
@@ -82,19 +84,19 @@ void CacheHierarchy::run_cache_hierarchy(void)
 
         // TODO: Refactor for multiple caches.
         
-        if (this->caches[0]->get_number_of_caches() == 1)
+        if (this->caches[L1_CACHE]->get_number_of_caches() == 1)
         {
-            utils::address addr = this->caches[0]->run_cache(operation, input_address, trace_loc);
+            utils::address addr = this->caches[L1_CACHE]->run_cache(operation, input_address, trace_loc);
         }
         else
         {
-            utils::address addr = this->caches[0]->run_cache(operation, input_address, trace_loc);
+            utils::address addr = this->caches[L1_CACHE]->run_cache(operation, input_address, trace_loc);
 
-            addr = this->caches[1]->run_cache(operation, input_address, trace_loc);
+            addr = this->caches[L2_CACHE]->run_cache(operation, input_address, trace_loc);
             
             if (this->inclusion_property == INCLUSIVE && addr.tag != -1)
             {
-                utils::address invalid_addr = this->caches[0]->invalidate(addr);
+                utils::address invalid_addr = this->caches[L1_CACHE]->invalidate(addr);
             }
         }
 
