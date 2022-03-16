@@ -44,6 +44,8 @@ namespace utils
 
     void write_back(utils::block *block, unsigned int *write_backs);
 
+    std::string to_hex(unsigned int binary_value);
+
     // Prints an element in a clean way depending if it is the last element.
     std::string get_separator(int current, int length);
     std::ostream& operator << (std::ostream &output, utils::address addr);

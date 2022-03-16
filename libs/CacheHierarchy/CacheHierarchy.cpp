@@ -182,6 +182,31 @@ void CacheHierarchy::print_sim_results(void)
     std::cout << "m. total memory traffic:      " << this->total_memory_traffic << std::endl;
 }
 
+void CacheHierarchy::print_final_cache(utils::block **cache, 
+                                       unsigned int number_of_sets, 
+                                       unsigned int number_of_ways)
+{
+    for (int set = 0; set < number_of_sets; set++)
+    {
+        // TODO: WILL THIS BREAK?
+        std::cout << "Set" << "\t" << set << ":" << "\t";
+        for (int way = 0; way < number_of_ways; way++)
+        {
+            std::cout << utils::to_hex(cache[set][way].tag);
+
+            if (cache[set][way].dirty_bit)
+            {
+                std::cout << " " << "D\t";
+            }
+            else
+            {
+                std::cout << "\t";
+            }
+        }
+        std::cout << std::endl;
+    }
+}
+
 void CacheHierarchy::print_results(ArgumentWrapper arguments)
 {
     std::cout << "===== Simulator configuration =====" << std::endl;
@@ -192,11 +217,21 @@ void CacheHierarchy::print_results(ArgumentWrapper arguments)
     if (this->caches[L1_CACHE]->get_number_of_caches() == 1)
     {
         std::cout << "===== L1 contents =====" << std::endl;
+        this->print_final_cache(this->caches[L1_CACHE]->get_sets(), 
+                                this->caches[L1_CACHE]->get_number_of_sets(), 
+                                this->caches[L1_CACHE]->get_associativity());
     }
     else
     {
         std::cout << "===== L1 contents =====" << std::endl;
+        this->print_final_cache(this->caches[L1_CACHE]->get_sets(), 
+                                this->caches[L1_CACHE]->get_number_of_sets(), 
+                                this->caches[L1_CACHE]->get_associativity());
+
         std::cout << "===== L2 contents =====" << std::endl;
+        this->print_final_cache(this->caches[L2_CACHE]->get_sets(), 
+                                this->caches[L2_CACHE]->get_number_of_sets(), 
+                                this->caches[L2_CACHE]->get_associativity());
     }
 
     std::cout << "===== Simulation results (raw) =====" << std::endl;

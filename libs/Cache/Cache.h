@@ -81,6 +81,7 @@ class Cache
         unsigned int get_number_of_sets(void);
         unsigned int get_number_of_blocks(void);
         unsigned int get_number_of_caches(void);
+        utils::block **get_sets(void);
 };
 
 // Output a Cache in a clean way.

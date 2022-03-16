@@ -34,6 +34,7 @@ class CacheHierarchy
 
     void print_sim_configs(ArgumentWrapper arguments);
     void print_sim_results(void);
+    void print_final_cache(utils::block **cache, unsigned int number_of_sets, unsigned int number_of_ways);
 
     public:
         CacheHierarchy(ArgumentWrapper arguments);

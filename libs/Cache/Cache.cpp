@@ -57,6 +57,13 @@ Cache::Cache (std::tuple<std::string, unsigned int, unsigned int> level, unsigne
 
     if (this->replacement_policy == LRU)
     {
+        this->sets = new utils::block* [this->number_of_sets];
+
+        for (int set = 0; set < this->number_of_sets; set++)
+        {
+            this->sets[set] = new utils::block [this->associativity];
+        }
+
         this->set_maps = new std::unordered_map<unsigned int, utils::block>* [this->number_of_sets];
 
         for (int set = 0; set < this->number_of_sets; set++)
@@ -190,6 +197,7 @@ utils::address Cache::lru(utils::address addr)
 {
     utils::address evictee;
     std::unordered_map<unsigned int, utils::block> *current_set = this->set_maps[addr.index];
+    utils::block *set = this->sets[addr.index];
 
     if (current_set->find(addr.tag) == current_set->end())
     {
@@ -204,6 +212,7 @@ utils::address Cache::lru(utils::address addr)
         if (current_set->size() < this->associativity)
         {
             // MISS
+            new_block.way = current_set->size();
             current_set->emplace(addr.tag, new_block);
         }
         else
@@ -221,10 +230,13 @@ utils::address Cache::lru(utils::address addr)
                 }
             }
 
+            new_block.way = evictee_block.way;
             current_set->erase(evictee_block.tag);
             current_set->emplace(addr.tag, new_block);
             evictee = evictee_block.addr;
         }
+
+        set[new_block.way] = new_block;
     }
     else
     {
@@ -528,6 +540,11 @@ unsigned int Cache::get_number_of_blocks(void)
 unsigned int Cache::get_number_of_caches(void)
 {
     return this->number_of_caches;
+}
+
+utils::block **Cache::get_sets(void)
+{
+    return this->sets;
 }
 
 // Output a Cache in a clean way.

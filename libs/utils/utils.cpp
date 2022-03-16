@@ -52,6 +52,15 @@ void utils::write_back(utils::block *block, unsigned int *write_backs)
     write_backs++;
 }
 
+std::string utils::to_hex(unsigned int binary_value)
+{
+    std::stringstream hex_stream;
+
+    hex_stream << std::hex << binary_value;
+
+    return hex_stream.str();
+}
+
 // Prints an element in a clean way depending if it is the last element.
 std::string utils::get_separator(int current, int length)
 {
@@ -80,6 +89,6 @@ std::ostream& utils::operator << (std::ostream &output, utils::address addr)
 
 std::ostream& utils::operator << (std::ostream &output, utils::block block)
 {
-    output << "(V: " << block.valid << ", T: " << block.tag << ", S: " << block.sequence_number << ")";
+    output << "(V: " << block.valid << ", T: " << block.tag << ", S: " << block.sequence_number << ", D: " << block.dirty_bit << ")";
     return output;
 }
