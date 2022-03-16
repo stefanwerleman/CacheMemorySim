@@ -32,12 +32,16 @@ class CacheHierarchy
 
     unsigned int total_memory_traffic = 0;
 
+    void print_sim_configs(ArgumentWrapper arguments);
+    void print_sim_results(void);
+
     public:
         CacheHierarchy(ArgumentWrapper arguments);
         ~CacheHierarchy(void);
 
         void run_cache_hierarchy(void);
-        void get_traces();
+        void get_traces(void);
+        void print_results(ArgumentWrapper arguments);
 };
 
 #endif

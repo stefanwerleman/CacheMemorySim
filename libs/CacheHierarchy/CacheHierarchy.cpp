@@ -150,3 +150,55 @@ void CacheHierarchy::get_traces(void)
 
     file.close();
 }
+
+void CacheHierarchy::print_sim_configs(ArgumentWrapper arguments)
+{
+    std::cout << "BLOCKSIZE:             " << arguments.get_block_size() << std::endl;
+    std::cout << "L1_SIZE:               " << arguments.get_levels()[L1_CACHE] << std::endl;
+    std::cout << "L1_ASSOC:              " << arguments.get_levels()[L1_CACHE] << std::endl;
+    std::cout << "L2_SIZE:               " << arguments.get_levels()[L2_CACHE] << std::endl;
+    std::cout << "L2_ASSOC:              " << arguments.get_levels()[L2_CACHE] << std::endl;
+    std::cout << "REPLACEMENT POLICY:    " << arguments.get_replacement_policy() << std::endl;
+    
+    // TODO: CHANGE TO LOWERCASE FOR ALL.
+    std::cout << "INCLUSION PROPERTY:    " << arguments.get_inclusion_property() << std::endl;
+    std::cout << "trace_file:            " << arguments.get_trace_file() << std::endl;
+}
+
+void CacheHierarchy::print_sim_results(void)
+{
+    std::cout << "a. number of L1 reads:        " << this->l1_reads << std::endl;
+    std::cout << "b. number of L1 read misses:  " << this->l1_read_misses << std::endl;
+    std::cout << "c. number of L1 writes:       " << this->l1_writes << std::endl;
+    std::cout << "d. number of L1 write misses: " << this->l1_write_misses << std::endl;
+    std::cout << "e. L1 miss rate:              " << this->l1_miss_rate << std::endl;
+    std::cout << "f. number of L1 writebacks:   " << this->l1_write_backs << std::endl;
+    std::cout << "g. number of L2 reads:        " << this->l2_reads << std::endl;
+    std::cout << "h. number of L2 read misses:  " << this->l2_read_misses << std::endl;
+    std::cout << "i. number of L2 writes:       " << this->l2_writes << std::endl;
+    std::cout << "j. number of L2 write misses: " << this->l2_write_misses << std::endl;
+    std::cout << "k. L2 miss rate:              " << this->l2_miss_rate << std::endl;
+    std::cout << "l. number of L2 writebacks:   " << this->l2_write_backs << std::endl;
+    std::cout << "m. total memory traffic:      " << this->total_memory_traffic << std::endl;
+}
+
+void CacheHierarchy::print_results(ArgumentWrapper arguments)
+{
+    std::cout << "===== Simulator configuration =====" << std::endl;
+
+    this->print_sim_configs(arguments);
+
+    // TODO: PRINT 2D SETS OF BOTH CACHES.
+    if (this->caches[L1_CACHE]->get_number_of_caches() == 1)
+    {
+        std::cout << "===== L1 contents =====" << std::endl;
+    }
+    else
+    {
+        std::cout << "===== L1 contents =====" << std::endl;
+        std::cout << "===== L2 contents =====" << std::endl;
+    }
+
+    std::cout << "===== Simulation results (raw) =====" << std::endl;
+    this->print_sim_results();
+}
