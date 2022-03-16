@@ -49,7 +49,7 @@ utils::address utils::parse_address(std::string address, unsigned int block_size
 void utils::write_back(utils::block *block, unsigned int *write_backs)
 {
     block->dirty_bit = true;
-    write_backs++;
+    (*write_backs)++;
 }
 
 std::string utils::to_hex(unsigned int binary_value)

@@ -171,13 +171,24 @@ void CacheHierarchy::print_sim_results(void)
     std::cout << "b. number of L1 read misses:  " << this->l1_read_misses << std::endl;
     std::cout << "c. number of L1 writes:       " << this->l1_writes << std::endl;
     std::cout << "d. number of L1 write misses: " << this->l1_write_misses << std::endl;
+
+    this->l1_miss_rate = (double)(this->l1_read_misses + this->l1_write_misses) / (this->l1_reads + this->l1_writes);
     std::cout << "e. L1 miss rate:              " << this->l1_miss_rate << std::endl;
+    
     std::cout << "f. number of L1 writebacks:   " << this->l1_write_backs << std::endl;
+
     std::cout << "g. number of L2 reads:        " << this->l2_reads << std::endl;
     std::cout << "h. number of L2 read misses:  " << this->l2_read_misses << std::endl;
     std::cout << "i. number of L2 writes:       " << this->l2_writes << std::endl;
     std::cout << "j. number of L2 write misses: " << this->l2_write_misses << std::endl;
+
+    if (this->caches[L1_CACHE]->get_number_of_caches() > 1)
+    {
+        this->l2_miss_rate = (double)(this->l2_read_misses + this->l2_write_misses) / (this->l2_reads + this->l2_writes);
+    }
+
     std::cout << "k. L2 miss rate:              " << this->l2_miss_rate << std::endl;
+
     std::cout << "l. number of L2 writebacks:   " << this->l2_write_backs << std::endl;
     std::cout << "m. total memory traffic:      " << this->total_memory_traffic << std::endl;
 }

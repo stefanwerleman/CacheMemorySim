@@ -56,13 +56,43 @@ class Cache
 
         ~Cache (void);
 
-        utils::address direct_map(utils::address addr);
-        utils::address lru(utils::address addr);
-        utils::address plru(utils::address addr);
-        utils::address optimal(utils::address addr);
+        utils::address direct_map(utils::address addr,
+                                  unsigned int *reads,
+                                  unsigned int *read_misses,
+                                  unsigned int *writes,
+                                  unsigned int *write_misses,
+                                  unsigned int *write_backs);
+
+        utils::address lru(utils::address addr,
+                                  unsigned int *reads,
+                                  unsigned int *read_misses,
+                                  unsigned int *writes,
+                                  unsigned int *write_misses,
+                                  unsigned int *write_backs);
+
+        utils::address plru(utils::address addr,
+                                  unsigned int *reads,
+                                  unsigned int *read_misses,
+                                  unsigned int *writes,
+                                  unsigned int *write_misses,
+                                  unsigned int *write_backs);
+
+        utils::address optimal(utils::address addr,
+                                  unsigned int *reads,
+                                  unsigned int *read_misses,
+                                  unsigned int *writes,
+                                  unsigned int *write_misses,
+                                  unsigned int *write_backs);
+
         utils::address invalidate(utils::address addr);
 
-        utils::address run_cache(utils::address addr);
+        utils::address run_cache(utils::address addr,
+                                 unsigned int *reads,
+                                 unsigned int *read_misses,
+                                 unsigned int *writes,
+                                 unsigned int *write_misses,
+                                 unsigned int *write_backs);
+
         utils::address run_cache(char operation, 
                                  std::string input_address, 
                                  int trace_loc,
