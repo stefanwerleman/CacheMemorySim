@@ -57,6 +57,13 @@ Cache::Cache (std::tuple<std::string, unsigned int, unsigned int> level, unsigne
 
     if (this->replacement_policy == LRU)
     {
+        this->sets = new utils::block* [this->number_of_sets];
+
+        for (int set = 0; set < this->number_of_sets; set++)
+        {
+            this->sets[set] = new utils::block [this->associativity];
+        }
+
         this->set_maps = new std::unordered_map<unsigned int, utils::block>* [this->number_of_sets];
 
         for (int set = 0; set < this->number_of_sets; set++)
@@ -157,16 +164,34 @@ Cache::~Cache (void)
     }
 }
 
-utils::address Cache::direct_map(utils::address addr)
+utils::address Cache::direct_map(utils::address addr, 
+                                 unsigned int *reads,
+                                 unsigned int *read_misses,
+                                 unsigned int *writes,
+                                 unsigned int *write_misses,
+                                 unsigned int *write_backs)
 {
     utils::address evictee;
 
     if (addr.tag == this->sets[addr.index][DIRECT_BLOCK].tag)
     {
         // HIT
+        if (addr.operation == 'w')
+        {
+            utils::write_back(&(this->sets[addr.index][DIRECT_BLOCK]), write_backs);
+        }
     }
     else if (this->sets[addr.index][DIRECT_BLOCK].tag == -1)
     {
+        if (addr.operation == 'w')
+        {
+            (*write_misses)++;
+        }
+        else if (addr.operation == 'r')
+        {
+            (*read_misses)++;
+        }
+
         // MISS but can fill it.
         this->sets[addr.index][DIRECT_BLOCK].tag = addr.tag;
         this->sets[addr.index][DIRECT_BLOCK].valid = true;
@@ -186,13 +211,28 @@ utils::address Cache::direct_map(utils::address addr)
     return evictee;
 }
 
-utils::address Cache::lru(utils::address addr)
+utils::address Cache::lru(utils::address addr,
+                          unsigned int *reads,
+                          unsigned int *read_misses,
+                          unsigned int *writes,
+                          unsigned int *write_misses,
+                          unsigned int *write_backs)
 {
     utils::address evictee;
     std::unordered_map<unsigned int, utils::block> *current_set = this->set_maps[addr.index];
+    utils::block *set = this->sets[addr.index];
 
     if (current_set->find(addr.tag) == current_set->end())
     {
+        if (addr.operation == 'w')
+        {
+            (*write_misses)++;
+        }
+        else if (addr.operation == 'r')
+        {
+            (*read_misses)++;
+        }
+
         utils::block new_block;
 
         new_block.addr = addr;
@@ -204,6 +244,7 @@ utils::address Cache::lru(utils::address addr)
         if (current_set->size() < this->associativity)
         {
             // MISS
+            new_block.way = current_set->size();
             current_set->emplace(addr.tag, new_block);
         }
         else
@@ -221,23 +262,36 @@ utils::address Cache::lru(utils::address addr)
                 }
             }
 
+            new_block.way = evictee_block.way;
             current_set->erase(evictee_block.tag);
             current_set->emplace(addr.tag, new_block);
             evictee = evictee_block.addr;
         }
+
+        set[new_block.way] = new_block;
     }
     else
     {
         // HIT
         current_set->at(addr.tag).sequence_number = this->mru[addr.index];
         this->mru[addr.index]++;
+
+        if (addr.operation == 'w')
+        {
+            utils::write_back(&current_set->at(addr.tag), write_backs);
+        }
     }
 
 
     return evictee;
 }
 
-utils::address Cache::plru(utils::address addr)
+utils::address Cache::plru(utils::address addr,
+                           unsigned int *reads,
+                           unsigned int *read_misses,
+                           unsigned int *writes,
+                           unsigned int *write_misses,
+                           unsigned int *write_backs)
 {
     utils::address evictee;
     utils::block *current_set = this->sets[addr.index];
@@ -257,9 +311,23 @@ utils::address Cache::plru(utils::address addr)
         // HIT
         current_block = set_map->at(addr.tag);
         needs_update = true;
+
+        if (addr.operation == 'w')
+        {
+            utils::write_back(&(set_map->at(addr.tag)), write_backs);
+        }
     }
     else
     {
+        if (addr.operation == 'w')
+        {
+            (*write_misses)++;
+        }
+        else if (addr.operation == 'r')
+        {
+            (*read_misses)++;
+        }
+
         utils::block new_block;
         if (set_map->size() < this->associativity)
         {
@@ -340,7 +408,12 @@ utils::address Cache::plru(utils::address addr)
     return evictee;
 }
 
-utils::address Cache::optimal(utils::address addr)
+utils::address Cache::optimal(utils::address addr,
+                              unsigned int *reads,
+                              unsigned int *read_misses,
+                              unsigned int *writes,
+                              unsigned int *write_misses,
+                              unsigned int *write_backs)
 {
     utils::address evictee;
     utils::block *current_set = this->sets[addr.index];
@@ -350,9 +423,22 @@ utils::address Cache::optimal(utils::address addr)
     if (set_map->find(addr.tag) != set_map->end())
     {
         // HIT
+        if (addr.operation == 'w')
+        {
+            utils::write_back(&(set_map->at(addr.tag)), write_backs);
+        }
     }
     else
     {
+        if (addr.operation == 'w')
+        {
+            (*write_misses)++;
+        }
+        else if (addr.operation == 'r')
+        {
+            (*read_misses)++;
+        }
+
         utils::block new_block;
         if (set_map->size() < this->associativity)
         {
@@ -442,34 +528,56 @@ utils::address Cache::invalidate(utils::address addr)
     return addr;
 }
 
-utils::address Cache::run_cache(utils::address addr)
+utils::address Cache::run_cache(utils::address addr,
+                                unsigned int *reads,
+                                unsigned int *read_misses,
+                                unsigned int *writes,
+                                unsigned int *write_misses,
+                                unsigned int *write_backs)
 {
     utils::address evictee;
     if (this->associativity == DIRECT_MAP)
     {
-        evictee = this->direct_map(addr);
+        evictee = this->direct_map(addr, reads, read_misses, writes, write_misses, write_backs);
     }
     else if (this->replacement_policy == LRU)
     {
-        evictee = this->lru(addr);
+        evictee = this->lru(addr, reads, read_misses, writes, write_misses, write_backs);
     }
     else if (this->replacement_policy == PLRU)
     {
-        evictee = this->plru(addr);
+        evictee = this->plru(addr, reads, read_misses, writes, write_misses, write_backs);
     }
     else if (this->replacement_policy == OPTIMAL)
     {
-        evictee = this->optimal(addr);
+        evictee = this->optimal(addr, reads, read_misses, writes, write_misses, write_backs);
     }
 
     return evictee;
 }
 
-utils::address Cache::run_cache(char operation, std::string input_address, int trace_loc)
+utils::address Cache::run_cache(char operation, 
+                                std::string input_address, 
+                                int trace_loc,
+                                unsigned int *reads,
+                                unsigned int *read_misses,
+                                unsigned int *writes,
+                                unsigned int *write_misses,
+                                unsigned int *write_backs)
 {
     utils::address addr = utils::parse_address(operation, input_address, this->block_size, this->number_of_sets);
     addr.trace_loc = trace_loc;
-    return this->run_cache(addr);
+
+    if (addr.operation == 'w')
+    {
+        (*writes)++;
+    }
+    else if (addr.operation == 'r')
+    {
+        (*reads)++;
+    }
+
+    return this->run_cache(addr, reads, read_misses, writes, write_misses, write_backs);
 }
 
 void Cache::set_traces(std::string *traces)
@@ -521,6 +629,11 @@ unsigned int Cache::get_number_of_blocks(void)
 unsigned int Cache::get_number_of_caches(void)
 {
     return this->number_of_caches;
+}
+
+utils::block **Cache::get_sets(void)
+{
+    return this->sets;
 }
 
 // Output a Cache in a clean way.

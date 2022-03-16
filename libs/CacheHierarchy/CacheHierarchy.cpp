@@ -12,6 +12,8 @@
 
 const std::string NON_INCLUSIVE = "NON-INCLUSIVE";
 const std::string INCLUSIVE = "INCLUSIVE";
+const unsigned int L1_CACHE = 0;
+const unsigned int L2_CACHE = 1;
 
 const int NUMBER_OF_TRACES = 100001;
 
@@ -82,19 +84,40 @@ void CacheHierarchy::run_cache_hierarchy(void)
 
         // TODO: Refactor for multiple caches.
         
-        if (this->caches[0]->get_number_of_caches() == 1)
+        if (this->caches[L1_CACHE]->get_number_of_caches() == 1)
         {
-            utils::address addr = this->caches[0]->run_cache(operation, input_address, trace_loc);
+            utils::address addr = this->caches[L1_CACHE]->run_cache(operation, 
+                                                                    input_address, 
+                                                                    trace_loc,
+                                                                    &(this->l1_reads),
+                                                                    &(this->l1_read_misses),
+                                                                    &(this->l1_writes),
+                                                                    &(this->l1_write_misses),
+                                                                    &(this->l1_write_backs));
         }
         else
         {
-            utils::address addr = this->caches[0]->run_cache(operation, input_address, trace_loc);
+            utils::address addr = this->caches[L1_CACHE]->run_cache(operation, 
+                                                                    input_address, 
+                                                                    trace_loc,
+                                                                    &(this->l1_reads),
+                                                                    &(this->l1_read_misses),
+                                                                    &(this->l1_writes),
+                                                                    &(this->l1_write_misses),
+                                                                    &(this->l1_write_backs));
 
-            addr = this->caches[1]->run_cache(operation, input_address, trace_loc);
+            addr = this->caches[L2_CACHE]->run_cache(operation, 
+                                                     input_address, 
+                                                     trace_loc,
+                                                     &(this->l2_reads),
+                                                    &(this->l2_read_misses),
+                                                    &(this->l2_writes),
+                                                    &(this->l2_write_misses),
+                                                    &(this->l2_write_backs));
             
             if (this->inclusion_property == INCLUSIVE && addr.tag != -1)
             {
-                utils::address invalid_addr = this->caches[0]->invalidate(addr);
+                utils::address invalid_addr = this->caches[L1_CACHE]->invalidate(addr);
             }
         }
 
@@ -126,4 +149,102 @@ void CacheHierarchy::get_traces(void)
     }
 
     file.close();
+}
+
+void CacheHierarchy::print_sim_configs(ArgumentWrapper arguments)
+{
+    std::cout << "BLOCKSIZE:             " << arguments.get_block_size() << std::endl;
+    std::cout << "L1_SIZE:               " << arguments.get_levels()[L1_CACHE] << std::endl;
+    std::cout << "L1_ASSOC:              " << arguments.get_levels()[L1_CACHE] << std::endl;
+    std::cout << "L2_SIZE:               " << arguments.get_levels()[L2_CACHE] << std::endl;
+    std::cout << "L2_ASSOC:              " << arguments.get_levels()[L2_CACHE] << std::endl;
+    std::cout << "REPLACEMENT POLICY:    " << arguments.get_replacement_policy() << std::endl;
+    
+    // TODO: CHANGE TO LOWERCASE FOR ALL.
+    std::cout << "INCLUSION PROPERTY:    " << arguments.get_inclusion_property() << std::endl;
+    std::cout << "trace_file:            " << arguments.get_trace_file() << std::endl;
+}
+
+void CacheHierarchy::print_sim_results(void)
+{
+    std::cout << "a. number of L1 reads:        " << this->l1_reads << std::endl;
+    std::cout << "b. number of L1 read misses:  " << this->l1_read_misses << std::endl;
+    std::cout << "c. number of L1 writes:       " << this->l1_writes << std::endl;
+    std::cout << "d. number of L1 write misses: " << this->l1_write_misses << std::endl;
+
+    this->l1_miss_rate = (double)(this->l1_read_misses + this->l1_write_misses) / (this->l1_reads + this->l1_writes);
+    std::cout << "e. L1 miss rate:              " << this->l1_miss_rate << std::endl;
+    
+    std::cout << "f. number of L1 writebacks:   " << this->l1_write_backs << std::endl;
+
+    std::cout << "g. number of L2 reads:        " << this->l2_reads << std::endl;
+    std::cout << "h. number of L2 read misses:  " << this->l2_read_misses << std::endl;
+    std::cout << "i. number of L2 writes:       " << this->l2_writes << std::endl;
+    std::cout << "j. number of L2 write misses: " << this->l2_write_misses << std::endl;
+
+    if (this->caches[L1_CACHE]->get_number_of_caches() > 1)
+    {
+        this->l2_miss_rate = (double)(this->l2_read_misses + this->l2_write_misses) / (this->l2_reads + this->l2_writes);
+    }
+
+    std::cout << "k. L2 miss rate:              " << this->l2_miss_rate << std::endl;
+
+    std::cout << "l. number of L2 writebacks:   " << this->l2_write_backs << std::endl;
+    std::cout << "m. total memory traffic:      " << this->total_memory_traffic << std::endl;
+}
+
+void CacheHierarchy::print_final_cache(utils::block **cache, 
+                                       unsigned int number_of_sets, 
+                                       unsigned int number_of_ways)
+{
+    for (int set = 0; set < number_of_sets; set++)
+    {
+        // TODO: WILL THIS BREAK?
+        std::cout << "Set" << "\t" << set << ":" << "\t";
+        for (int way = 0; way < number_of_ways; way++)
+        {
+            std::cout << utils::to_hex(cache[set][way].tag);
+
+            if (cache[set][way].dirty_bit)
+            {
+                std::cout << " " << "D\t";
+            }
+            else
+            {
+                std::cout << "\t";
+            }
+        }
+        std::cout << std::endl;
+    }
+}
+
+void CacheHierarchy::print_results(ArgumentWrapper arguments)
+{
+    std::cout << "===== Simulator configuration =====" << std::endl;
+
+    this->print_sim_configs(arguments);
+
+    // TODO: PRINT 2D SETS OF BOTH CACHES.
+    if (this->caches[L1_CACHE]->get_number_of_caches() == 1)
+    {
+        std::cout << "===== L1 contents =====" << std::endl;
+        this->print_final_cache(this->caches[L1_CACHE]->get_sets(), 
+                                this->caches[L1_CACHE]->get_number_of_sets(), 
+                                this->caches[L1_CACHE]->get_associativity());
+    }
+    else
+    {
+        std::cout << "===== L1 contents =====" << std::endl;
+        this->print_final_cache(this->caches[L1_CACHE]->get_sets(), 
+                                this->caches[L1_CACHE]->get_number_of_sets(), 
+                                this->caches[L1_CACHE]->get_associativity());
+
+        std::cout << "===== L2 contents =====" << std::endl;
+        this->print_final_cache(this->caches[L2_CACHE]->get_sets(), 
+                                this->caches[L2_CACHE]->get_number_of_sets(), 
+                                this->caches[L2_CACHE]->get_associativity());
+    }
+
+    std::cout << "===== Simulation results (raw) =====" << std::endl;
+    this->print_sim_results();
 }

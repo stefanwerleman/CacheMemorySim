@@ -34,6 +34,8 @@ int main(int argc, char **argv)
     
     cache_hierarchy->run_cache_hierarchy();
 
+    cache_hierarchy->print_results(arguments);
+
     delete cache_hierarchy;
 
 	return 0;
