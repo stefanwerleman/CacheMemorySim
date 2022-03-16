@@ -17,13 +17,24 @@ int main(int argc, char **argv)
         return 1;
     }
 
-
     // Parses all arguments
     ArgumentWrapper arguments(argc, argv);
 
     CacheHierarchy *cache_hierarchy = new CacheHierarchy(arguments);
 
+    if (arguments.get_replacement_policy() == "OPTIMAL")
+    {
+        cache_hierarchy->get_traces();
+    }
+
+    if (arguments.get_replacement_policy() == "OPTIMAL")
+    {
+        cache_hierarchy->get_traces();
+    }
+    
     cache_hierarchy->run_cache_hierarchy();
+
+    cache_hierarchy->print_results(arguments);
 
     delete cache_hierarchy;
 

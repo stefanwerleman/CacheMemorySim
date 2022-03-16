@@ -4,6 +4,9 @@
 #include <iostream>
 #include <string>
 #include <tuple>
+#include <unordered_set>
+#include <unordered_map>
+#include <vector>
 
 #include "../ArgumentWrapper/ArgumentWrapper.h"
 #include "../utils/utils.h"
@@ -31,17 +34,76 @@ class Cache
     utils::block *victim_cache;
     utils::block **sets;
 
+    // LRU Policy
+    std::unordered_map<unsigned int, utils::block> **set_maps;
+    unsigned int *mru;
+
+    // PLRU Policy
+    bool **plru_tree;
+    unsigned int *next;
+    std::unordered_map<unsigned int, unsigned int> **hash_map;
+    
+    // Optimal Policy
+    static utils::address *traces;
+
     static unsigned int number_of_caches;
     static unsigned int block_size;    
 
     public:
-        Cache (std::tuple<std::string, unsigned int, unsigned int>, unsigned int block_size, std::string replacement_policy);
+        Cache (std::tuple<std::string, unsigned int, unsigned int>, 
+               unsigned int block_size, 
+               std::string replacement_policy);
+
         ~Cache (void);
 
-        utils::address* direct_map(utils::address addr);
+        utils::address direct_map(utils::address addr,
+                                  unsigned int *reads,
+                                  unsigned int *read_misses,
+                                  unsigned int *writes,
+                                  unsigned int *write_misses,
+                                  unsigned int *write_backs);
 
-        utils::address* run_cache(utils::address addr);
-        utils::address* run_cache(char operation, std::string input_address);
+        utils::address lru(utils::address addr,
+                                  unsigned int *reads,
+                                  unsigned int *read_misses,
+                                  unsigned int *writes,
+                                  unsigned int *write_misses,
+                                  unsigned int *write_backs);
+
+        utils::address plru(utils::address addr,
+                                  unsigned int *reads,
+                                  unsigned int *read_misses,
+                                  unsigned int *writes,
+                                  unsigned int *write_misses,
+                                  unsigned int *write_backs);
+
+        utils::address optimal(utils::address addr,
+                                  unsigned int *reads,
+                                  unsigned int *read_misses,
+                                  unsigned int *writes,
+                                  unsigned int *write_misses,
+                                  unsigned int *write_backs);
+
+        utils::address invalidate(utils::address addr);
+
+        utils::address run_cache(utils::address addr,
+                                 unsigned int *reads,
+                                 unsigned int *read_misses,
+                                 unsigned int *writes,
+                                 unsigned int *write_misses,
+                                 unsigned int *write_backs);
+
+        utils::address run_cache(char operation, 
+                                 std::string input_address, 
+                                 int trace_loc,
+                                 unsigned int *reads,
+                                 unsigned int *read_misses,
+                                 unsigned int *writes,
+                                 unsigned int *write_misses,
+                                 unsigned int *write_backs);
+
+
+        void set_traces(std::string *traces);
 
         unsigned int get_size(void);
         unsigned int get_associativity(void);
@@ -49,6 +111,7 @@ class Cache
         unsigned int get_number_of_sets(void);
         unsigned int get_number_of_blocks(void);
         unsigned int get_number_of_caches(void);
+        utils::block **get_sets(void);
 };
 
 // Output a Cache in a clean way.

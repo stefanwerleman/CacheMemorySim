@@ -17,15 +17,19 @@ namespace utils
     {
         std::string addr;
         char operation;
-        unsigned int tag = -1;
-        unsigned int index = -1;
-        unsigned int offset = -1;
+        int tag = -1;
+        int index = -1;
+        int offset = -1;
+        int trace_loc = -1;
     } address;
 
     typedef struct block
     {
         int tag = EMPTY_BIT;
         bool valid = false;
+        bool dirty_bit = false;
+        int sequence_number = EMPTY_BIT;    // LRU
+        int way = -1;                       // PLRU
         utils::address addr;
     } block;
     
@@ -34,6 +38,13 @@ namespace utils
                           unsigned int block_size, 
                           unsigned int number_of_sets);
 
+    address parse_address(std::string address, 
+                          unsigned int block_size, 
+                          unsigned int number_of_sets);
+
+    void write_back(utils::block *block, unsigned int *write_backs);
+
+    std::string to_hex(unsigned int binary_value);
 
     // Prints an element in a clean way depending if it is the last element.
     std::string get_separator(int current, int length);

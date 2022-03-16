@@ -35,6 +35,32 @@ utils::address utils::parse_address(char operation, std::string input_address, u
     return addr;
 }
 
+utils::address utils::parse_address(std::string address, unsigned int block_size, unsigned int number_of_sets)
+{   
+    char operation = address[0];
+    std::string input_address;
+
+    for (int c = 2; c < address.length(); c++)
+        input_address += address[c];
+    
+    return utils::parse_address(operation, input_address, block_size, number_of_sets);
+}
+
+void utils::write_back(utils::block *block, unsigned int *write_backs)
+{
+    block->dirty_bit = true;
+    (*write_backs)++;
+}
+
+std::string utils::to_hex(unsigned int binary_value)
+{
+    std::stringstream hex_stream;
+
+    hex_stream << std::hex << binary_value;
+
+    return hex_stream.str();
+}
+
 // Prints an element in a clean way depending if it is the last element.
 std::string utils::get_separator(int current, int length)
 {
@@ -63,6 +89,6 @@ std::ostream& utils::operator << (std::ostream &output, utils::address addr)
 
 std::ostream& utils::operator << (std::ostream &output, utils::block block)
 {
-    output << "(V: " << block.valid << ", T: " << block.tag << ")";
+    output << "(V: " << block.valid << ", T: " << block.tag << ", S: " << block.sequence_number << ", D: " << block.dirty_bit << ")";
     return output;
 }
