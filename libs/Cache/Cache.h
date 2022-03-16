@@ -63,7 +63,14 @@ class Cache
         utils::address invalidate(utils::address addr);
 
         utils::address run_cache(utils::address addr);
-        utils::address run_cache(char operation, std::string input_address, int trace_loc);
+        utils::address run_cache(char operation, 
+                                 std::string input_address, 
+                                 int trace_loc,
+                                 unsigned int *reads,
+                                 unsigned int *read_misses,
+                                 unsigned int *writes,
+                                 unsigned int *write_misses,
+                                 unsigned int *write_backs);
 
 
         void set_traces(std::string *traces);

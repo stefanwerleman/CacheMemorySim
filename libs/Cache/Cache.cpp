@@ -465,7 +465,14 @@ utils::address Cache::run_cache(utils::address addr)
     return evictee;
 }
 
-utils::address Cache::run_cache(char operation, std::string input_address, int trace_loc)
+utils::address Cache::run_cache(char operation, 
+                                std::string input_address, 
+                                int trace_loc,
+                                unsigned int *reads,
+                                unsigned int *read_misses,
+                                unsigned int *writes,
+                                unsigned int *write_misses,
+                                unsigned int *write_backs)
 {
     utils::address addr = utils::parse_address(operation, input_address, this->block_size, this->number_of_sets);
     addr.trace_loc = trace_loc;
