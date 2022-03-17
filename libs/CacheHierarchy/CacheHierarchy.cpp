@@ -154,10 +154,10 @@ void CacheHierarchy::get_traces(void)
 void CacheHierarchy::print_sim_configs(ArgumentWrapper arguments)
 {
     std::cout << "BLOCKSIZE:             " << arguments.get_block_size() << std::endl;
-    std::cout << "L1_SIZE:               " << arguments.get_levels()[L1_CACHE] << std::endl;
-    std::cout << "L1_ASSOC:              " << arguments.get_levels()[L1_CACHE] << std::endl;
-    std::cout << "L2_SIZE:               " << arguments.get_levels()[L2_CACHE] << std::endl;
-    std::cout << "L2_ASSOC:              " << arguments.get_levels()[L2_CACHE] << std::endl;
+    std::cout << "L1_SIZE:               " << std::get<1>(arguments.get_levels()[L1_CACHE]) << std::endl;
+    std::cout << "L1_ASSOC:              " << std::get<2>(arguments.get_levels()[L1_CACHE]) << std::endl;
+    std::cout << "L2_SIZE:               " << std::get<1>(arguments.get_levels()[L2_CACHE]) << std::endl;
+    std::cout << "L2_ASSOC:              " << std::get<2>(arguments.get_levels()[L2_CACHE]) << std::endl;
     std::cout << "REPLACEMENT POLICY:    " << arguments.get_replacement_policy() << std::endl;
     
     // TODO: CHANGE TO LOWERCASE FOR ALL.
