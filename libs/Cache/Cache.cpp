@@ -43,27 +43,20 @@ Cache::Cache (std::tuple<std::string, unsigned int, unsigned int> level, unsigne
 
     this->replacement_policy = replacement_policy;
 
+    this->sets = new utils::block* [this->number_of_sets];
+
+    for (int set = 0; set < this->number_of_sets; set++)
+    {
+        this->sets[set] = new utils::block [this->associativity];
+    }
+
     if (this->associativity <= 1)
     {
-        this->sets = new utils::block* [this->number_of_sets];
-
-        for (int set = 0; set < this->number_of_sets; set++)
-        {
-            this->sets[set] = new utils::block [this->associativity];
-        }
-
         this->victim_cache = new utils::block [2];
     }
 
     if (this->replacement_policy == LRU)
     {
-        this->sets = new utils::block* [this->number_of_sets];
-
-        for (int set = 0; set < this->number_of_sets; set++)
-        {
-            this->sets[set] = new utils::block [this->associativity];
-        }
-
         this->set_maps = new std::unordered_map<unsigned int, utils::block>* [this->number_of_sets];
 
         for (int set = 0; set < this->number_of_sets; set++)
@@ -102,13 +95,6 @@ Cache::Cache (std::tuple<std::string, unsigned int, unsigned int> level, unsigne
 
     if (this->replacement_policy == OPTIMAL)
     {
-        this->sets = new utils::block* [this->number_of_sets];
-
-        for (int set = 0; set < this->number_of_sets; set++)
-        {
-            this->sets[set] = new utils::block [this->associativity];
-        }
-
         this->set_maps = new std::unordered_map<unsigned int, utils::block>* [this->number_of_sets];
 
         for (int set = 0; set < this->number_of_sets; set++)
@@ -263,6 +249,7 @@ utils::address Cache::lru(utils::address addr,
             }
 
             new_block.way = evictee_block.way;
+            new_block.dirty_bit = evictee_block.dirty_bit;
             current_set->erase(evictee_block.tag);
             current_set->emplace(addr.tag, new_block);
             evictee = evictee_block.addr;
@@ -278,7 +265,8 @@ utils::address Cache::lru(utils::address addr,
 
         if (addr.operation == 'w')
         {
-            utils::write_back(&current_set->at(addr.tag), write_backs);
+            this->sets[addr.index][current_set->at(addr.tag).way].dirty_bit = true;
+            (*write_backs)++;
         }
     }
 
@@ -292,7 +280,7 @@ utils::address Cache::plru(utils::address addr,
                            unsigned int *writes,
                            unsigned int *write_misses,
                            unsigned int *write_backs)
-{
+{   
     utils::address evictee;
     utils::block *current_set = this->sets[addr.index];
     std::unordered_map<unsigned int, utils::block> *set_map = this->set_maps[addr.index];

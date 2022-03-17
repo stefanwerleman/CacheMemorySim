@@ -32,7 +32,6 @@ class Cache
     // Direct mapping members
     unsigned int victim_lru = 1;
     utils::block *victim_cache;
-    utils::block **sets;
 
     // LRU Policy
     std::unordered_map<unsigned int, utils::block> **set_maps;
@@ -50,6 +49,7 @@ class Cache
     static unsigned int block_size;    
 
     public:
+        utils::block **sets;
         Cache (std::tuple<std::string, unsigned int, unsigned int>, 
                unsigned int block_size, 
                std::string replacement_policy);
@@ -102,6 +102,8 @@ class Cache
                                  unsigned int *write_misses,
                                  unsigned int *write_backs);
 
+
+        // void cache_write()
 
         void set_traces(std::string *traces);
 

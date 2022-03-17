@@ -106,6 +106,8 @@ void CacheHierarchy::run_cache_hierarchy(void)
                                                                     &(this->l1_write_misses),
                                                                     &(this->l1_write_backs));
 
+            
+
             addr = this->caches[L2_CACHE]->run_cache(operation, 
                                                      input_address, 
                                                      trace_loc,
@@ -154,10 +156,10 @@ void CacheHierarchy::get_traces(void)
 void CacheHierarchy::print_sim_configs(ArgumentWrapper arguments)
 {
     std::cout << "BLOCKSIZE:             " << arguments.get_block_size() << std::endl;
-    std::cout << "L1_SIZE:               " << arguments.get_levels()[L1_CACHE] << std::endl;
-    std::cout << "L1_ASSOC:              " << arguments.get_levels()[L1_CACHE] << std::endl;
-    std::cout << "L2_SIZE:               " << arguments.get_levels()[L2_CACHE] << std::endl;
-    std::cout << "L2_ASSOC:              " << arguments.get_levels()[L2_CACHE] << std::endl;
+    std::cout << "L1_SIZE:               " << std::get<1>(arguments.get_levels()[L1_CACHE]) << std::endl;
+    std::cout << "L1_ASSOC:              " << std::get<2>(arguments.get_levels()[L1_CACHE]) << std::endl;
+    std::cout << "L2_SIZE:               " << std::get<1>(arguments.get_levels()[L2_CACHE]) << std::endl;
+    std::cout << "L2_ASSOC:              " << std::get<2>(arguments.get_levels()[L2_CACHE]) << std::endl;
     std::cout << "REPLACEMENT POLICY:    " << arguments.get_replacement_policy() << std::endl;
     
     // TODO: CHANGE TO LOWERCASE FOR ALL.
@@ -193,19 +195,18 @@ void CacheHierarchy::print_sim_results(void)
     std::cout << "m. total memory traffic:      " << this->total_memory_traffic << std::endl;
 }
 
-void CacheHierarchy::print_final_cache(utils::block **cache, 
+void CacheHierarchy::print_final_cache(unsigned int cache, 
                                        unsigned int number_of_sets, 
                                        unsigned int number_of_ways)
 {
     for (int set = 0; set < number_of_sets; set++)
     {
-        // TODO: WILL THIS BREAK?
         std::cout << "Set" << "\t" << set << ":" << "\t";
         for (int way = 0; way < number_of_ways; way++)
         {
-            std::cout << utils::to_hex(cache[set][way].tag);
-
-            if (cache[set][way].dirty_bit)
+            std::cout << utils::to_hex(this->caches[cache]->sets[set][way].tag);
+  
+            if (this->caches[cache]->sets[set][way].dirty_bit)
             {
                 std::cout << " " << "D\t";
             }
@@ -228,19 +229,19 @@ void CacheHierarchy::print_results(ArgumentWrapper arguments)
     if (this->caches[L1_CACHE]->get_number_of_caches() == 1)
     {
         std::cout << "===== L1 contents =====" << std::endl;
-        this->print_final_cache(this->caches[L1_CACHE]->get_sets(), 
+        this->print_final_cache(L1_CACHE, 
                                 this->caches[L1_CACHE]->get_number_of_sets(), 
                                 this->caches[L1_CACHE]->get_associativity());
     }
     else
     {
         std::cout << "===== L1 contents =====" << std::endl;
-        this->print_final_cache(this->caches[L1_CACHE]->get_sets(), 
+        this->print_final_cache(L1_CACHE, 
                                 this->caches[L1_CACHE]->get_number_of_sets(), 
                                 this->caches[L1_CACHE]->get_associativity());
 
         std::cout << "===== L2 contents =====" << std::endl;
-        this->print_final_cache(this->caches[L2_CACHE]->get_sets(), 
+        this->print_final_cache(L2_CACHE, 
                                 this->caches[L2_CACHE]->get_number_of_sets(), 
                                 this->caches[L2_CACHE]->get_associativity());
     }
